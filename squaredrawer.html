@@ -448,10 +448,54 @@ function getSquares(width,height){
 			}
 		}
 	}
-	if(width > 2 && height > 2 && (width + height - Math.floor(width) - Math.floor(height) >= Math.SQRT2)){//5, +2
+	if(width > 2 && height > 2 && (width + height - Math.floor(width) - Math.floor(height) >= Math.SQRT2)){//5, +2, +3
 		let h_gap = height - Math.floor(height);
 		let w_gap = width - Math.floor(width);
-		if(width > 5 && height > 4){
+		if(width > 8 && height > 6){
+			if(record.coords.length < Math.floor(width)*Math.ceil(width) + 3){
+				record.coords = [
+					[0,0,0],
+					[1 + w_gap,0,0],
+					[1 + w_gap,1 + h_gap,0],
+					[0,1 + h_gap,0],
+					[1 - h_gap/2,1 + h_gap/2,-45],
+
+					[3,2,0],
+					[1 + w_gap+3,2,0],
+					[1 + w_gap+3,3 + h_gap,0],
+					[3,1 + h_gap+2,0],
+					[1 - h_gap/2+3,3 + h_gap/2,-45],
+
+					[6,4,0],
+					[1 + w_gap+6,4,0],
+					[1 + w_gap+6,5 + h_gap,0],
+					[6,1 + h_gap+4,0],
+					[1 - h_gap/2+6,5 + h_gap/2,-45],
+
+
+					[0,2+h_gap,0],[1,2+h_gap,0],[2,2+h_gap,0],
+					[0,3+h_gap,0],[1,3+h_gap,0],[2,3+h_gap,0],
+					[0,4+h_gap,0],[1,4+h_gap,0],[2,4+h_gap,0],[3,4+h_gap,0],[4,4+h_gap,0],[5,4+h_gap,0],
+					[0,5+h_gap,0],[1,5+h_gap,0],[2,5+h_gap,0],[3,5+h_gap,0],[4,5+h_gap,0],[5,5+h_gap,0],
+
+					[2+w_gap,0,0],[3+w_gap,0,0],[4+w_gap,0,0],[5+w_gap,0,0],[6+w_gap,0,0],[7+w_gap,0,0],
+					[2+w_gap,1,0],[3+w_gap,1,0],[4+w_gap,1,0],[5+w_gap,1,0],[6+w_gap,1,0],[7+w_gap,1,0],
+					[5+w_gap,2,0],[6+w_gap,2,0],[7+w_gap,2,0],
+					[5+w_gap,3,0],[6+w_gap,3,0],[7+w_gap,3,0],
+				];
+				for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
+					for(let j=0;j<Math.floor(6 + h_gap);j++){
+						record.coords.push([8 + w_gap + i,j,0])
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 6 - h_gap);j++){
+						record.coords.push([i,6 + h_gap + j,0])
+					}
+				}
+			}
+		}
+		else if(width > 5 && height > 4){
 			if(record.coords.length < Math.floor(width)*Math.ceil(width) + 2){
 				record.coords = [
 					[0,0,0],
@@ -460,11 +504,11 @@ function getSquares(width,height){
 					[0,1 + h_gap,0],
 					[1 - h_gap/2,1 + h_gap/2,-45],
 
-					[(5+w_gap)  - 1,(4+h_gap) - 1,0],
-					[(5+w_gap)  - 1 - (1 + w_gap),(4+h_gap)  - 1,0],
-					[(5+w_gap)  - 1 - (1 + w_gap),(4+h_gap)  - 1 - (1 + h_gap),0],
-					[(5+w_gap)  - 1,(4+h_gap)  - 1 - (1 + h_gap),0],
-					[(5+w_gap)  - (1 - h_gap/2),(4+h_gap) - (1 + h_gap/2),135],
+					[3,2,0],
+					[1 + w_gap+3,2,0],
+					[1 + w_gap+3,3 + h_gap,0],
+					[3,1 + h_gap+2,0],
+					[1 - h_gap/2+3,3 + h_gap/2,-45],
 
 					[0,2+h_gap,0],[1,2+h_gap,0],[2,2+h_gap,0],
 					[0,3+h_gap,0],[1,3+h_gap,0],[2,3+h_gap,0],

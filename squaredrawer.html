@@ -12,6 +12,7 @@ Square:<input id="square" type="checkbox">
 <div id="svgContainer" style="resize:both;overflow:auto;"></div>
 <p id="efficiency"></p>
 <p id="comment" style="display:none"></p>
+<canvas id="triangle"></canvas>
 <script>
 let widthInput = document.getElementById("width");
 let heightInput = document.getElementById("height");
@@ -43,8 +44,8 @@ let s = Math.sin(Math.PI*49.818/180);
 let t = Math.tan(Math.PI*49.818/180);
 
 let squareList = [
-	{x: 1, y:1, n:1, coords:[[0,0,0]]},
-	{x: 2+s2, y:2+s2, n:5, coords:[[0,0,0],[1+s2,0,0],[0,1+s2,0],[1+s2,1+s2,0],[1-s2/2,1+s2/2,-45]]},
+	//{x: 1, y:1, n:1, coords:[[0,0,0]]},
+	//{x: 2+s2, y:2+s2, n:5, coords:[[0,0,0],[1+s2,0,0],[0,1+s2,0],[1+s2,1+s2,0],[1-s2/2,1+s2/2,-45]]},
 	{x: 3 + 2/Math.sqrt(5), y:3+1/Math.sqrt(5), n:10, coords:[
 		[0,0,0],[1,0,0],[0,1,0],
 		[2 + 2/Math.sqrt(5),0,0],
@@ -465,6 +466,11 @@ function getSquares(width,height){
 			ref: "trivial"
 		}
 	}
+	if(height > width){
+		let other = getSquares(height,width);
+		other.coords = transpose(other.coords);
+		return other
+	}
 	let record = {
 			coords: [],
 			comment: "Unknown",
@@ -525,104 +531,38 @@ function getSquares(width,height){
 			}
 		}
 	}
-	if(width > 2 && height > 2 && (width + height - Math.floor(width) - Math.floor(height) >= Math.SQRT2)){//5, +2, +3
+	if(width > 2 && height > 2 && (width + height - Math.floor(width) - Math.floor(height) >= Math.SQRT2)){//5, +2, +3, ...
 		let h_gap = height - Math.floor(height);
 		let w_gap = width - Math.floor(width);
-		if(width > 8 && height > 6){
-			if(record.coords.length < Math.floor(width)*Math.ceil(width) + 3){
-				record.coords = [
-					[0,0,0],
-					[1 + w_gap,0,0],
-					[1 + w_gap,1 + h_gap,0],
-					[0,1 + h_gap,0],
-					[1 - h_gap/2,1 + h_gap/2,-45],
-
-					[3,2,0],
-					[1 + w_gap+3,2,0],
-					[1 + w_gap+3,3 + h_gap,0],
-					[3,1 + h_gap+2,0],
-					[1 - h_gap/2+3,3 + h_gap/2,-45],
-
-					[6,4,0],
-					[1 + w_gap+6,4,0],
-					[1 + w_gap+6,5 + h_gap,0],
-					[6,1 + h_gap+4,0],
-					[1 - h_gap/2+6,5 + h_gap/2,-45],
-
-
-					[0,2+h_gap,0],[1,2+h_gap,0],[2,2+h_gap,0],
-					[0,3+h_gap,0],[1,3+h_gap,0],[2,3+h_gap,0],
-					[0,4+h_gap,0],[1,4+h_gap,0],[2,4+h_gap,0],[3,4+h_gap,0],[4,4+h_gap,0],[5,4+h_gap,0],
-					[0,5+h_gap,0],[1,5+h_gap,0],[2,5+h_gap,0],[3,5+h_gap,0],[4,5+h_gap,0],[5,5+h_gap,0],
-
-					[2+w_gap,0,0],[3+w_gap,0,0],[4+w_gap,0,0],[5+w_gap,0,0],[6+w_gap,0,0],[7+w_gap,0,0],
-					[2+w_gap,1,0],[3+w_gap,1,0],[4+w_gap,1,0],[5+w_gap,1,0],[6+w_gap,1,0],[7+w_gap,1,0],
-					[5+w_gap,2,0],[6+w_gap,2,0],[7+w_gap,2,0],
-					[5+w_gap,3,0],[6+w_gap,3,0],[7+w_gap,3,0],
-				];
-				for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
-					for(let j=0;j<Math.floor(6 + h_gap);j++){
-						record.coords.push([8 + w_gap + i,j,0])
+		let cel_num = Math.min(Math.floor(height/2),Math.floor(Math.ceil(width)/3));
+		record.coords = [];
+		for(let c = 0;c<cel_num;c++){
+			record.coords.push([c*3+0,c*2,0]);
+			record.coords.push([c*3+1 + w_gap,c*2,0]);
+			record.coords.push([c*3+1 + w_gap,c*2+1 + h_gap,0]);
+			record.coords.push([c*3+0,c*2+1 + h_gap,0]);
+			record.coords.push([c*3+1 - h_gap/2,c*2+1 + h_gap/2,-45]);
+			if(c){
+				for(let i=0;i<3;i++){
+					for(let j=0;j<c*2;j++){
+						record.coords.push([w_gap + c*3 - 1 + i,j,0])
 					}
 				}
-				for(let i=0;i<Math.floor(width);i++){
-					for(let j=0;j<Math.floor(height - 6 - h_gap);j++){
-						record.coords.push([i,6 + h_gap + j,0])
+				for(let i=0;i<2;i++){
+					for(let j=0;j<c*3;j++){
+						record.coords.push([j,h_gap + c*2 + i,0])
 					}
 				}
 			}
 		}
-		else if(width > 5 && height > 4){
-			if(record.coords.length < Math.floor(width)*Math.ceil(width) + 2){
-				record.coords = [
-					[0,0,0],
-					[1 + w_gap,0,0],
-					[1 + w_gap,1 + h_gap,0],
-					[0,1 + h_gap,0],
-					[1 - h_gap/2,1 + h_gap/2,-45],
-
-					[3,2,0],
-					[1 + w_gap+3,2,0],
-					[1 + w_gap+3,3 + h_gap,0],
-					[3,1 + h_gap+2,0],
-					[1 - h_gap/2+3,3 + h_gap/2,-45],
-
-					[0,2+h_gap,0],[1,2+h_gap,0],[2,2+h_gap,0],
-					[0,3+h_gap,0],[1,3+h_gap,0],[2,3+h_gap,0],
-					[2+w_gap,0,0],[3+w_gap,0,0],[4+w_gap,0,0],
-					[2+w_gap,1,0],[3+w_gap,1,0],[4+w_gap,1,0],
-				];
-				for(let i=0;i<Math.floor(width - 5 - w_gap);i++){
-					for(let j=0;j<Math.floor(4 + h_gap);j++){
-						record.coords.push([5 + w_gap + i,j,0])
-					}
-				}
-				for(let i=0;i<Math.floor(width);i++){
-					for(let j=0;j<Math.floor(height - 4 - h_gap);j++){
-						record.coords.push([i,4 + h_gap + j,0])
-					}
-				}
+		if(Math.floor(height) % 2){
+			for(let i=0;i<Math.floor(width);i++){
+				record.coords.push([i,height - 1,0])
 			}
 		}
-		else{
-			if(record.coords.length < Math.floor(width)*Math.ceil(width) + 1){
-				record.coords = [
-					[0,0,0],
-					[1 + w_gap,0,0],
-					[1 + w_gap,1 + h_gap,0],
-					[0,1 + h_gap,0],
-					[1 - h_gap/2,1 + h_gap/2,-45],
-				];
-				for(let i=0;i<Math.floor(width - 2 - w_gap);i++){
-					for(let j=0;j<Math.floor(2 + h_gap);j++){
-						record.coords.push([2 + w_gap + i,j,0])
-					}
-				}
-				for(let i=0;i<Math.floor(width);i++){
-					for(let j=0;j<Math.floor(height - 2 - h_gap);j++){
-						record.coords.push([i,2 + h_gap + j,0])
-					}
-				}
+		for(let i=0;i < Math.floor(width) - 3*cel_num + 1;i++){
+			for(let j=0;j<cel_num*2;j++){
+				record.coords.push([w_gap + cel_num*3 - 1 + i,j,0])
 			}
 		}
 	}
@@ -669,14 +609,7 @@ function getSquares(width,height){
 						boost.push([i,8 + h_gap + j,0])
 					}
 				}
-				let new_width = width - 9;
-				let new_height = height - 8;
-				if(new_width < new_height){
-					boost = boost.concat(transpose(getSquares(new_height,new_width).coords).map(a => [a[0] + 9,a[1] + 8,a[2]]))
-				}
-				else{
-					boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
-				}
+				boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
 			}
 			else{
 				for(let i=0;i<Math.floor(width);i++){
@@ -723,14 +656,7 @@ function getSquares(width,height){
 					boost.push([i,8 + h_gap + j,0])
 				}
 			}
-			let new_width = width - 9;
-			let new_height = height - 8;
-			if(new_width < new_height){
-				boost = boost.concat(transpose(getSquares(new_height,new_width).coords).map(a => [a[0] + 9,a[1] + 8,a[2]]))
-			}
-			else{
-				boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
-			}
+			boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
 		}
 		else{
 			for(let i=0;i<Math.floor(width);i++){
@@ -931,6 +857,7 @@ function getSquares(width,height){
 			}
 			let numa = Math.floor(width/arr.x);
 			if(record.coords.length < arr.n*numa + Math.floor(width - arr.x*numa)*Math.floor(arr.y) + Math.floor(height - arr.y)*Math.floor(width)){
+				//alert("when?" + width + "," + height);
 				record.coords = arr.coords.map(a => a);
 				for(let i=1;i<numa;i++){
 					record.coords = record.coords.concat(arr.coords.map(a => [a[0]+i*arr.x,a[1],a[2]]))
@@ -1056,6 +983,107 @@ function rand(){
 	widthInput.value = 1.5 + Math.random()*10;
 	heightInput.value = 1.5 + Math.random()*10;
 	updateDimensions()
+}
+
+function triangleFill(a,b){
+	let delta1 = a/b;
+	let square1 = 0;
+	let base1 = a;
+	while(base1 >= 1){
+		base1 -= delta1;
+		square1 += Math.max(Math.floor(base1),0)
+	}
+	let delta2 = a/b + b/a;
+	let square2 = 0;
+	let base2 = Math.hypot(a,b);
+	while(base2 >= 1){
+		base2 -= delta2;
+		square2 += Math.max(Math.floor(base2),0)
+	}
+	return [square1,square2]
+}
+
+function triangleFill2(a,b){
+	let delta1 = a/b;
+	let square1 = 0;
+	let base1 = a;
+	let side1 = b;
+	while(base1 >= 1){
+		base1 -= delta1;
+		side1 -= 1;
+		square1 += Math.max(Math.floor(base1),0);
+		let off = triangleFill(base1,side1);
+		if(off[1] > off[0]){
+			return off[1] + square1;
+		}
+	}
+	let delta2 = a/b + b/a;
+	let square2 = 0;
+	let base2 = Math.hypot(a,b);
+	while(base2 >= 1){
+		base2 -= delta2;
+		square2 += Math.max(Math.floor(base2),0)
+	}
+	return 0
+}
+
+function triangle_recursive(a,b){
+	if(a < 1 || b < 1){
+		return 0
+	}
+	let delta1 = a/b;
+	let base1 = a - delta1;
+	let res1 = Math.max(Math.floor(base1),0) + triangle_recursive(base1,b-1);
+	let delta1b = b/a;
+	let base1b = b - delta1b;
+	let res1b = Math.max(Math.floor(base1b),0) + triangle_recursive(base1b,a-1);
+	let delta2 = a/b + b/a;
+	let hypot = Math.hypot(a,b);
+	let base2 = hypot - delta2;
+	let res2 = Math.max(Math.floor(base2),0) + triangle_recursive(a - hypot/b,b - hypot/a);
+	return Math.max(res1,res2,res1b);
+}
+
+
+function triangleFill3(a,b){
+	return triangleFill(a,b).concat([triangle_recursive(a,b)])
+}
+
+function teff(){
+	let canvas = document.getElementById("triangle");
+	canvas.width = 1400;
+	canvas.height = 1400;
+	let ctx = canvas.getContext("2d");
+	ctx.fillStyle = "white";
+	ctx.fillRect(0,0,canvas.width,canvas.height);
+	for(let i=0;i<canvas.width;i++){
+		for(let j=i;j<canvas.height ;j++){
+			let res = triangleFill3(i*0.01,j*0.01);
+			/*let col = Math.min(Math.max(128 + (res[0] - res[1]) * 32,0),255);
+			ctx.fillStyle = "rgb(" + col + "," + col + "," + col + ")";
+			ctx.fillRect(i,j,1,1);*/
+			
+			if(res[2] > res[1] && res[2] > res[0]){
+				ctx.fillStyle = "blue";
+				ctx.fillRect(i,j,1,1);
+				ctx.fillRect(j,i,1,1);
+			}
+			else if(res[0] > res[1]){
+				ctx.fillStyle = "green";
+				ctx.fillRect(i,j,1,1);
+				ctx.fillRect(j,i,1,1);
+			}
+			else if(res[1] > res[0]){
+				ctx.fillStyle = "red";
+				ctx.fillRect(i,j,1,1);
+				ctx.fillRect(j,i,1,1);
+			}
+		}
+	}
+}
+
+function tell(n){
+	return Math.sqrt(2*n);
 }
 </script>
 </body>

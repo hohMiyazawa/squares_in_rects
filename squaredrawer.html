@@ -646,60 +646,101 @@ function getSquares(width,height){
 		if(record.coords.length < Math.floor(width)*Math.floor(height) + 1){
 			let h_gap = height - Math.floor(height);
 			let w_gap = width - Math.floor(width);
-			record.coords = [];
+			let boost = [];
 			[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[0,2],[1,2],[0,3]].forEach(loc => {
-				record.coords.push([loc[0],loc[1],0]);
-				record.coords.push([8 + w_gap - loc[0] - 1,loc[1],0]);
-				record.coords.push([8 + w_gap - loc[0] - 1,8 + h_gap - loc[1] - 1,0]);
-				record.coords.push([loc[0],8 + h_gap - loc[1] - 1,0]);
+				boost.push([loc[0],loc[1],0]);
+				boost.push([8 + w_gap - loc[0] - 1,loc[1],0]);
+				boost.push([8 + w_gap - loc[0] - 1,8 + h_gap - loc[1] - 1,0]);
+				boost.push([loc[0],8 + h_gap - loc[1] - 1,0]);
 			});
 			for(let i=0;i<5;i++){
 				for(let j=0;j<5;j++){
-					record.coords.push([1 - h_gap/2 + s2*(i+j), 4 + h_gap/2 + s2*(j-i),-45]);
+					boost.push([1 - h_gap/2 + s2*(i+j), 4 + h_gap/2 + s2*(j-i),-45]);
 				}
 			}
 			for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
 				for(let j=0;j<Math.floor(8 + h_gap);j++){
-					record.coords.push([8 + w_gap + i,j,0])
+					boost.push([8 + w_gap + i,j,0])
 				}
 			}
-			for(let i=0;i<Math.floor(width);i++){
-				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
-					record.coords.push([i,8 + h_gap + j,0])
+			if(width > 9){
+				for(let i=0;i<9;i++){
+					for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+						boost.push([i,8 + h_gap + j,0])
+					}
 				}
+				let new_width = width - 9;
+				let new_height = height - 8;
+				if(new_width < new_height){
+					boost = boost.concat(transpose(getSquares(new_height,new_width).coords).map(a => [a[0] + 9,a[1] + 8,a[2]]))
+				}
+				else{
+					boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
+				}
+			}
+			else{
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+						boost.push([i,8 + h_gap + j,0])
+					}
+				}
+			}
+			if(boost.length > record.coords.length){
+				record.coords = boost
+			}
+			if(boost.length > record.coords.length){
+				record.coords = boost
 			}
 		}
 	}
 	if(width > 8 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 8*s1 - 10)){//66
-		if(record.coords.length < Math.floor(width)*Math.floor(height) + 2){
-			let h_gap = height - Math.floor(height);
-			let w_gap = width - Math.floor(width);
-			record.coords = [
-				[0,8+h_gap - 2,0],[0,8+h_gap - 1,0],[1,8+h_gap - 1,0],
-				[6+w_gap,0,0],[7+w_gap,0,0],[7+w_gap,1,0],
-			];
-			[[0,0],[1,0],[2,0],[3,0],[4,0],[0,1],[1,1],[2,1],[3,1],[0,2],[1,2],[2,2],[0,3],[1,3],[0,4]].forEach(loc => {
-				record.coords.push([loc[0],loc[1],0]);
-				record.coords.push([8+w_gap - loc[0] - 1,8+h_gap - loc[1] - 1,0]);
-			});
-			[[5,0],[4,1],[3,2],[2,3],[1,4],[0,5]].forEach(loc => {
-				record.coords.push([8+w_gap - loc[0] - 1,8+h_gap - loc[1] - 1,0]);
-			});
-			for(let i=0;i<8;i++){
-				for(let j=0;j<3;j++){
-					record.coords.push([2+w_gap/2 + s2*i - j*s2,8+h_gap - 1 + w_gap/2 - i*s2 - j*s2,-135]);
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let boost = [
+			[0,8+h_gap - 2,0],[0,8+h_gap - 1,0],[1,8+h_gap - 1,0],
+			[6+w_gap,0,0],[7+w_gap,0,0],[7+w_gap,1,0],
+		];
+		[[0,0],[1,0],[2,0],[3,0],[4,0],[0,1],[1,1],[2,1],[3,1],[0,2],[1,2],[2,2],[0,3],[1,3],[0,4]].forEach(loc => {
+			boost.push([loc[0],loc[1],0]);
+			boost.push([8+w_gap - loc[0] - 1,8+h_gap - loc[1] - 1,0]);
+		});
+		[[5,0],[4,1],[3,2],[2,3],[1,4],[0,5]].forEach(loc => {
+			boost.push([8+w_gap - loc[0] - 1,8+h_gap - loc[1] - 1,0]);
+		});
+		for(let i=0;i<8;i++){
+			for(let j=0;j<3;j++){
+				boost.push([2+w_gap/2 + s2*i - j*s2,8+h_gap - 1 + w_gap/2 - i*s2 - j*s2,-135]);
+			}
+		}
+		for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
+			for(let j=0;j<Math.floor(8 + h_gap);j++){
+				boost.push([8 + w_gap + i,j,0])
+			}
+		}
+		if(width > 9){
+			for(let i=0;i<9;i++){
+				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+					boost.push([i,8 + h_gap + j,0])
 				}
 			}
-			for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
-				for(let j=0;j<Math.floor(8 + h_gap);j++){
-					record.coords.push([8 + w_gap + i,j,0])
-				}
+			let new_width = width - 9;
+			let new_height = height - 8;
+			if(new_width < new_height){
+				boost = boost.concat(transpose(getSquares(new_height,new_width).coords).map(a => [a[0] + 9,a[1] + 8,a[2]]))
 			}
+			else{
+				boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
+			}
+		}
+		else{
 			for(let i=0;i<Math.floor(width);i++){
 				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
-					record.coords.push([i,8 + h_gap + j,0])
+					boost.push([i,8 + h_gap + j,0])
 				}
 			}
+		}
+		if(boost.length > record.coords.length){
+			record.coords = boost
 		}
 	}
 	if(width > 9 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 6*s1 - 7)){//76

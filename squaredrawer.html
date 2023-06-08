@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+Width:<input id="width" type="number" min="0" step="0.02" value="3.9" max="50">
+Height:<input id="height" type="number" min="0" step="0.02" value="3.9" max="50">
+Square:<input id="square" type="checkbox">
+<p>Or drag the lower right corner around</p>
+<button onclick="rand()">Random</button>
+<div id="svgContainer" style="resize:both;overflow:auto;"></div>
+<p id="efficiency"></p>
+<p id="comment" style="display:none"></p>
+<script>
+let widthInput = document.getElementById("width");
+let heightInput = document.getElementById("height");
+let squareInput = document.getElementById("square");
+let svgContainer = document.getElementById("svgContainer");
+let efficiency = document.getElementById("efficiency");
+let comment = document.getElementById("comment");
+function removeChildren(node){
+	if(node){
+		while(node.childElementCount){
+			node.lastChild.remove()
+		}
+	}
+}
+function generateLattice(x,y,width,height){
+	let coords = [];
+	for(let i=0;i<Math.floor(width);i++){
+		for(let j=0;j<Math.floor(height);j++){
+			coords.push([x+i,y+j,0])
+		}
+	}
+	return coords;
+}
+
+const s1 = Math.SQRT2;
+const s2 = Math.SQRT2/2;
+let c = Math.cos(Math.PI*49.818/180);
+let s = Math.sin(Math.PI*49.818/180);
+let t = Math.tan(Math.PI*49.818/180);
+
+let squareList = [
+	{x: 1, y:1, n:1, coords:[[0,0,0]]},
+	{x: 2+s2, y:2+s2, n:5, coords:[[0,0,0],[1+s2,0,0],[0,1+s2,0],[1+s2,1+s2,0],[1-s2/2,1+s2/2,-45]]},
+	{x: 3 + 2/Math.sqrt(5), y:3+1/Math.sqrt(5), n:10, coords:[
+		[0,0,0],[1,0,0],[0,1,0],
+		[2 + 2/Math.sqrt(5),0,0],
+		[0,2+1/Math.sqrt(5),0],
+		[2 + 2/Math.sqrt(5),2+1/Math.sqrt(5),0],[1 + 2/Math.sqrt(5),2+1/Math.sqrt(5),0],[2 + 2/Math.sqrt(5),1+1/Math.sqrt(5),0],
+		[0.8 + 0.035,2.4 -0.035*2,-63.43494882292201],
+		[1.8 - 0.08,1.4 +0.08*2,-63.43494882292201],
+	]},
+	{x: 7 / 2 + 3 * s2, y: 5 / 2 + 3 * s2, n:21, coords:[
+		[0,0,0],
+		[1,0,0],
+		[0,1,0],
+
+		[7 / 2 + 3 * s2 - 1,0,0],
+		[7 / 2 + 3 * s2 - 2,0,0],
+		[7 / 2 + 3 * s2 - 1,1,0],
+
+		[7 / 2 + 3 * s2 - 1,5 / 2 + 3 * s2 - 1,0],
+		[7 / 2 + 3 * s2 - 2,5 / 2 + 3 * s2 - 1,0],
+		[7 / 2 + 3 * s2 - 1,5 / 2 + 3 * s2 - 2,0],
+
+		[0,5 / 2 + 3 * s2 - 1,0],
+		[1,5 / 2 + 3 * s2 - 1,0],
+		[0,5 / 2 + 3 * s2 - 2,0],
+
+		[1 - (-3 / 4 + 3 * s2/2),2+(-3 / 4 + 3 * s2/2),-45],
+		[1 - (-3 / 4 + 3 * s2/2)+s2,2+(-3 / 4 + 3 * s2/2)-s2,-45],
+		[1 - (-3 / 4 + 3 * s2/2)+s2*2,2+(-3 / 4 + 3 * s2/2)-s2*2,-45],
+
+		[1 - (-3 / 4 + 3 * s2/2)+s2,2+(-3 / 4 + 3 * s2/2)+s2,-45],
+		[1 - (-3 / 4 + 3 * s2/2)+s2+s2,2+(-3 / 4 + 3 * s2/2)-s2+s2,-45],
+		[1 - (-3 / 4 + 3 * s2/2)+s2*2+s2,2+(-3 / 4 + 3 * s2/2)-s2*2+s2,-45],
+
+		[1 - (-3 / 4 + 3 * s2/2)+s2*2,2+(-3 / 4 + 3 * s2/2)+s2*2,-45],
+		[1 - (-3 / 4 + 3 * s2/2)+s2+s2*2,2+(-3 / 4 + 3 * s2/2)-s2+s2*2,-45],
+		[1 - (-3 / 4 + 3 * s2/2)+s2*2+s2*2,2+(-3 / 4 + 3 * s2/2)-s2*2+s2*2,-45],
+	]},
+	{x: 3.87708359002281417730789706010, y:3.87708359002281417730789706010, n:11, coords:[
+		[0,0,0],
+		[0,3.87708359002281417730789706010-2,0],
+		[0,3.87708359002281417730789706010-1,0],
+		[3.87708359002281417730789706010-1,0,0],
+		[1,3.87708359002281417730789706010-1,0],
+		[2.03255694012844604 ,3.877084-1,0],//done
+		[0.5676453633988737,1.511948770624432,-49.818062709670286],//done
+		[t*(2*s - 1.511948770624432 )  + c +0.5676453633988737 ,s,-49.818062709670286],//done
+		[0.5676453633988737 + s - c*0.118781,1.511948770624432 + c + s*0.118781,-49.818062709670286],//done
+		[t*(2*s - 1.511948770624432 ) + c +0.5676453633988737 + s - c*0.118781,s + c + s*0.118781,-49.818062709670286],//done
+		//[1.92,1.5,-49.818],
+		[3.87708359002281417730789706010-s-c,2.401,-49.818062709670286],
+	]},
+	{x: 12*(1+s1)/5, y:6*(1+s1)/5, n:12, coords:[
+		[0,6*(1+s1)/5-1,0],
+		[0,6*(1+s1)/5-2,0],
+		[1,6*(1+s1)/5-1,0],
+		[12*(1+s1)/5-1,0,0],
+		[12*(1+s1)/5-2,0,0],
+		[12*(1+s1)/5-1,1,0],
+		[3-6*(1+s1)/5 + s1,0,45],
+		[3-6*(1+s1)/5 + s1*2,0,45],
+		[3-6*(1+s1)/5 + s1+s2,s2,45],
+		[12*(1+s1)/5-(3-6*(1+s1)/5 + s1),6*(1+s1)/5,-135],
+		[12*(1+s1)/5-(3-6*(1+s1)/5 + s1*2),6*(1+s1)/5,-135],
+		[12*(1+s1)/5-(3-6*(1+s1)/5 + s1+s2),6*(1+s1)/5-s2,-135],
+	]},
+	{x: 4.67553009360455095163411127048315, y:4.67553009360455095163411127048315, n:17, coords:[
+		[0,0,0],//done
+		[1,0,0],//done
+		[0,1,0],//done
+		[2.67553009360455095163411127048315,0,0],//done
+		[3.67553009360455095163411127048315,0,0],//done
+		[3.67553009360455095163411127048315,1,0],//done
+
+		[3.67553009360455095163411127048315,2.11346013251256404552110105703833,0],
+
+		[0,3.67553009360455095163411127048315,0],//done
+
+		[1.84732482651028509718122846547049,3.67553009360455095163411127048315,0],
+
+		[3.67553009360455095163411127048315,3.67553009360455095163411127048315,0],//done
+
+		[2.23126048295327188587059610137880,0.72248139200922175219168287171559,39.8049589774499973462400047793339],
+		[2.22455253828333495549006470982323,2.09257499378867968722973417022601,39.8049589774499973462400047793339],
+		[1.49271119994262770175560192341917,1.40873371618283432601585800379015,39.8049589774499973462400047793339],
+		[2.96310182129397913960505888778287,1.40632266961506711340555903815146,39.8049589774499973462400047793339],
+
+		[0.64017619242926608758416854327031,2,39.8049589774499973462400047793339],
+		[1.382,2.678,39.8049589774499973462400047793339],
+
+		[2.54550971432895279624386048106669,3.26948797698562051517148994054930,-36.6237863834465893201859433547440],
+	]},
+	{x: (7+Math.sqrt(7))/2, y:(7+Math.sqrt(7))/2, n:18, coords:[
+		[0,0,0],//done
+		[0,1,0],//done
+		[(7+Math.sqrt(7))/2-1,0,0],
+		[(7+Math.sqrt(7))/2-2,0,0],
+		[(7+Math.sqrt(7))/2-3,0,0],
+		[(7+Math.sqrt(7))/2-1,1,0],
+		[(7+Math.sqrt(7))/2-2,1,0],
+		[0,(7+Math.sqrt(7))/2-2,0],
+		[0,(7+Math.sqrt(7))/2-1,0],
+		[1,(7+Math.sqrt(7))/2-1,0],
+		[(7+Math.sqrt(7))/2-1,(7+Math.sqrt(7))/2-1,0],
+		[(7+Math.sqrt(7))/2-2,(7+Math.sqrt(7))/2-1,0],
+		[(7+Math.sqrt(7))/2-1,(7+Math.sqrt(7))/2-2,0],
+		[(7+Math.sqrt(7))/2-2,(7+Math.sqrt(7))/2-2,0],
+		[1-0.3085783708246108,0.3085783708246108/0.45141622964513656+2,-65.70481105463543],
+		[1-0.3085783708246108 + 0.4114378277661477 ,0.3085783708246108/0.45141622964513656 - 0.9114378277661477+2,-65.70481105463543],
+		[(7+Math.sqrt(7))/2-2 + 0.3085783708246108 - 0.4114378277661477 - 0.9114378277661477,(7+Math.sqrt(7))/2-2 - 0.3085783708246108/0.45141622964513656 + 0.9114378277661477 - 0.4114378277661477,-65.70481105463543],
+		[(7+Math.sqrt(7))/2-2 + 0.3085783708246108 - 0.4114378277661477*2 - 0.9114378277661477,(7+Math.sqrt(7))/2-2 - 0.3085783708246108/0.45141622964513656 + 0.9114378277661477*2 - 0.4114378277661477,-65.70481105463543],
+	]},
+	{x: 3 + 4*s1/3, y: 3 + 4*s1/3, n:19, coords:[
+		[0,0,0],
+		[0,1,0],
+		[1,0,0],
+
+		[2 + 4*s1/3,0,0],
+
+		[2 + 4*s1/3,2 + 4*s1/3,0],
+		[2 + 4*s1/3,1 + 4*s1/3,0],
+		[2 + 4*s1/3,4*s1/3,0],
+
+		[1 + 4*s1/3,2 + 4*s1/3,0],
+		[1 + 4*s1/3,1 + 4*s1/3,0],
+
+		[4*s1/3,2 + 4*s1/3,0],
+
+		[0,2 + 4*s1/3,0],
+
+		[1+(4*s1/3 - 1)/2,2 + 4*s1/3 + (4*s1/3 - 1)/2,-135],
+		[1+(4*s1/3 - 1)/2-s2,2 + 4*s1/3 + (4*s1/3 - 1)/2-s2,-135],
+
+		[1+(4*s1/3 - 1)/2+(1/2-s1/3)+s2,2 + 4*s1/3 + (4*s1/3 - 1)/2+(1/2-s1/3)-s2,-135],
+		[1+(4*s1/3 - 1)/2-s2+(1/2-s1/3)+s2,2 + 4*s1/3 + (4*s1/3 - 1)/2-s2+(1/2-s1/3)-s2,-135],
+
+		[2 + 4*s1/3 + (4*s1/3 - 1)/2,1+(4*s1/3 - 1)/2,135],
+		[2 + 4*s1/3 + (4*s1/3 - 1)/2-s2,1+(4*s1/3 - 1)/2-s2,135],
+
+		[2 + 4*s1/3 + (4*s1/3 - 1)/2+(1/2-s1/3)-s2,1+(4*s1/3 - 1)/2+(1/2-s1/3)+s2,135],
+		[2 + 4*s1/3 + (4*s1/3 - 1)/2-s2+(1/2-s1/3)-s2,1+(4*s1/3 - 1)/2-s2+(1/2-s1/3)+s2,135],
+	]},
+	{x: 5+s2, y:5+s2, n:27, coords:[
+		[0,0,0],
+		[1,0,0],
+		[2,0,0],
+		[3,0,0],
+		[0,1,0],
+		[1,1,0],
+		[2,1,0],
+		[0,2,0],
+		[1,2,0],
+		[0,3,0],
+
+		[5+s2-1,5+s2-1,0],
+		[5+s2-2,5+s2-1,0],
+		[5+s2-3,5+s2-1,0],
+		[5+s2-4,5+s2-1,0],
+		[5+s2-1,5+s2-2,0],
+		[5+s2-2,5+s2-2,0],
+		[5+s2-3,5+s2-2,0],
+		[5+s2-1,5+s2-3,0],
+		[5+s2-2,5+s2-3,0],
+		[5+s2-1,5+s2-4,0],
+
+		[0,5+s2-1,0],
+		[5+s2-1,0,0],
+
+		[1-s2/2,4+s2/2,-45],
+		[1-s2/2+s2,4+s2/2-s2,-45],
+		[1-s2/2+s2*2,4+s2/2-s2*2,-45],
+		[1-s2/2+s2*3,4+s2/2-s2*3,-45],
+		[1-s2/2+s2*4,4+s2/2-s2*4,-45],
+	]},
+	{x: 5.934392385433883, y: 5.934392385433883, n:29, coords:[
+		[0,0,0],
+		[1,0,0],
+		[0,1,0],
+		[5.934392385433883-1,0,0],
+		[5.934392385433883-2,0,0],
+		[5.934392385433883-3,0,0],
+		[0,5.934392385433883-1,0],
+		[1,5.934392385433883-1,0],
+		[5.934392385433883-1,5.934392385433883-1,0],
+		[5.934392385433883-2,5.934392385433883-1,0],
+		[5.934392385433883-3,5.934392385433883-1,0],
+		[5.9343923854338831-1,5.934392385433883-2,0],
+		[5.934392385433883-2,5.934392385433883-2,0],
+		[5.934392385433883-1,5.934392385433883-3,0],
+
+		[2.205,3.948,18.237505152074221178242697407128],
+		[1.255,3.636,18.237505152074221178242697407128],
+		[0.312,3.304,18.237505152074221178242697407128],
+		[3.122,3.197,18.237505152074221178242697407128],
+		[2.1723,2.885,18.237505152074221178242697407128],
+		[1.229,2.553,18.237505152074221178242697407128],
+		[0.312,2.142,18.237505152074221178242697407128],
+
+		[1.249,1.372,21.630726313643649575092123487519],
+
+		[2.18,0.63,26.001192984238322670663761654164],
+
+		[4.053,2.435,20.33],
+		[3.11,2.102,20.33],
+		[2.159,1.789,20.33],
+
+		[4.997,1.649,20.26],
+		[4.0585,1.303,20.26],
+		[3.105,1,20.26],
+	]},
+	{x: 3 + s1*2, y:3 + s1*2, n:28, coords:[
+		[0,0,0],
+		[1,0,0],
+		[0,1,0],
+
+		[3 + s1*2 - 1,0,0],
+		[3 + s1*2 - 2,0,0],
+		[3 + s1*2 - 1,1,0],
+
+		[3 + s1*2 - 1,3 + s1*2 - 1,0],
+		[3 + s1*2 - 2,3 + s1*2 - 1,0],
+		[3 + s1*2 - 1,3 + s1*2 - 2,0],
+
+		[0,3 + s1*2 - 1,0],
+		[1,3 + s1*2 - 1,0],
+		[0,3 + s1*2 - 2,0],
+
+		[1-((3+s1*2)/2 - 2),2+((3+s1*2)/2 - 2),-45],[1-((3+s1*2)/2 - 2)+s2,2+((3+s1*2)/2 - 2)-s2,-45],[1-((3+s1*2)/2 - 2)+s2*2,2+((3+s1*2)/2 - 2)-s2*2,-45],[1-((3+s1*2)/2 - 2)+s2*3,2+((3+s1*2)/2 - 2)-s2*3,-45],
+		[1-((3+s1*2)/2 - 2)+s2,2+((3+s1*2)/2 - 2)+s2,-45],[1-((3+s1*2)/2 - 2)+s2+s2,2+((3+s1*2)/2 - 2)-s2+s2,-45],[1-((3+s1*2)/2 - 2)+s2+s2*2,2+((3+s1*2)/2 - 2)-s2*2+s2,-45],[1-((3+s1*2)/2 - 2)+s2+s2*3,2+((3+s1*2)/2 - 2)-s2*3+s2,-45],
+		[1-((3+s1*2)/2 - 2)+s1,2+((3+s1*2)/2 - 2)+s1,-45],[1-((3+s1*2)/2 - 2)+s2+s1,2+((3+s1*2)/2 - 2)-s2+s1,-45],[1-((3+s1*2)/2 - 2)+s2*2+s1,2+((3+s1*2)/2 - 2)-s2*2+s1,-45],[1-((3+s1*2)/2 - 2)+s2*3+s1,2+((3+s1*2)/2 - 2)-s2*3+s1,-45],
+		[1-((3+s1*2)/2 - 2)+s2*3,2+((3+s1*2)/2 - 2)+s2*3,-45],[1-((3+s1*2)/2 - 2)+s2+s2*3,2+((3+s1*2)/2 - 2)-s2+s2*3,-45],[1-((3+s1*2)/2 - 2)+s2*2+s2*3,2+((3+s1*2)/2 - 2)-s2*2+s2*3,-45],[1-((3+s1*2)/2 - 2)+s2*3+s2*3,2+((3+s1*2)/2 - 2)-s2*3+s2*3,-45],
+	]},
+	{x: 6.59861960924436011617837046268, y: 6.59861960924436011617837046268, n:37, coords:[
+		[0,0,0],
+		[1,0,0],
+		[0,1,0],
+
+		[6.59861960924436011617837046268-1,6.59861960924436011617837046268-1,0],
+		[6.59861960924436011617837046268-1,6.59861960924436011617837046268-2,0],
+		[6.59861960924436011617837046268-2,6.59861960924436011617837046268-1,0],
+
+		[6.59861960924436011617837046268-3,0,0],
+		[6.59861960924436011617837046268-2,0,0],
+		[6.59861960924436011617837046268-1,0,0],
+		[6.59861960924436011617837046268-2,1,0],
+		[6.59861960924436011617837046268-1,1,0],
+		[6.59861960924436011617837046268-1,2,0],
+
+		[0,6.59861960924436011617837046268-4,0],
+		[0,6.59861960924436011617837046268-3,0],
+		[0,6.59861960924436011617837046268-2,0],
+		[0,6.59861960924436011617837046268-1,0],
+		[1,6.59861960924436011617837046268-3,0],
+		[1,6.59861960924436011617837046268-2,0],
+		[1,6.59861960924436011617837046268-1,0],
+		[2,6.59861960924436011617837046268-2,0],
+		[2,6.59861960924436011617837046268-1,0],
+		[3,6.59861960924436011617837046268-1,0],
+
+
+		[2,6.59861960924436011617837046268-2-s2,-45],
+		[2+s2,6.59861960924436011617837046268-2-s1,-45],
+		[2+s1,6.59861960924436011617837046268-2-s2*3,-45],
+
+		[0.702236622111675543312166010545,2.32969614911279769616252407621,-47.9133925257940968951470647263],
+		[0.702236622111675543312166010545+0.742132528683414-0.048177368919081656,2.32969614911279769616252407621+0.6702531684893117+0.05334401134099515,-47.9133925257940968951470647263],
+
+		[0.702236622111675543312166010545+0.6702531684893117+0.05334401134099515,2.32969614911279769616252407621-0.742132528683414+0.048177368919081656,-47.9133925257940968951470647263],
+		[0.702236622111675543312166010545+0.6702531684893117*2+0.05334401134099515,2.32969614911279769616252407621-0.742132528683414*2+0.048177368919081656,-47.9133925257940968951470647263],
+
+		[0.702236622111675543312166010545+0.6702531684893117+0.742132528683414+0.05334401134099515-0.048177368919081656,2.32969614911279769616252407621-0.742132528683414+0.6702531684893117+0.048177368919081656+0.05334401134099515,-47.9133925257940968951470647263],
+		[0.702236622111675543312166010545+0.6702531684893117*2+0.742132528683414+0.05334401134099515-0.048177368919081656,2.32969614911279769616252407621-0.742132528683414*2+0.6702531684893117+0.048177368919081656+0.05334401134099515,-47.9133925257940968951470647263],
+
+		[4.268923460131562,5.896382987132684,47.9133925257940968951470647263+180],[3.5453262803012553,5.202427827368352,47.9133925257940968951470647263+180],[4.9628786198958945,5.172785807302378,47.9133925257940968951470647263+180],[5.705011148579309,4.502532638813065,47.9133925257940968951470647263+180],[4.239281440065588,4.478830647538045,47.9133925257940968951470647263+180],[4.981413968749002,3.8085774790487332,47.9133925257940968951470647263+180],
+
+	]},
+]
+
+function transpose(list){
+	return list.map(a => [a[1],a[0],-a[2]]);
+}
+
+function gen_slant(width,height){
+	let base_len = Math.floor(height) + 1;
+	let angle = Math.asin(height/Math.sqrt(base_len*base_len + 1)) - Math.asin(1/Math.sqrt(base_len*base_len + 1));
+	let c = Math.cos(Math.PI/2 - angle);
+	let s = Math.sin(Math.PI/2 - angle);
+	let end_cap = c + base_len * s;
+	if(end_cap < width){
+		let units = Math.floor((width - end_cap) * c);
+		let slag = width - end_cap - units/c;
+		let end_height = Math.max(0,height - s - c/s);
+		let end_height_a = Math.max(0,height - s - (c/s*2));
+		let end_height_b = Math.max(0,height - s - (c/s*3));
+		//let end_height_c = Math.max(0,height - s - (c/s*4));
+		let end_height2 = Math.max(0,height - s - c/s * (1 - slag));
+		let end_height3 = Math.max(0,height - s - c/s * (2 - slag));
+		let end_height4 = Math.max(0,height - s - c/s * (3 - slag));
+		let end_height5 = Math.max(0,height - s - c/s * (4 - slag));
+		let coords = [];
+		let ang = 180*((angle)/Math.PI)
+		for(let i=0;i<=units;i++){
+			for(let j=0;j<base_len;j++){
+				coords.push([i/c + j*s,height - s - j*c,-ang])
+			}
+		}
+		for(let i=0;i<Math.floor(end_height);i++){
+			coords.push([0,i,0])
+		}
+		for(let i=0;i<Math.floor(end_height_a);i++){
+			coords.push([1,i,0])
+		}
+		for(let i=0;i<Math.floor(end_height_b);i++){
+			coords.push([2,i,0])
+		}
+		/*for(let i=0;i<Math.floor(end_height_c);i++){
+			coords.push([3,i,0])
+		}*/
+		for(let i=0;i<Math.floor(end_height2);i++){
+			coords.push([width - 1,height - i - 1,0])
+		}
+		for(let i=0;i<Math.floor(end_height3);i++){
+			coords.push([width - 2,height - i - 1,0])
+		}
+		for(let i=0;i<Math.floor(end_height4);i++){
+			coords.push([width - 3,height - i - 1,0])
+		}
+		for(let i=0;i<Math.floor(end_height5);i++){
+			coords.push([width - 4,height - i - 1,0])
+		}
+		return coords;
+	}
+	return []
+}
+
+function getSquares(width,height){
+	if(width < 1 || height < 1){
+		return {
+			coords: [],
+			comment: "No squares fit",
+			proven: true,
+			ref: "trivial"
+		}
+	}
+	let record = {
+			coords: [],
+			comment: "Unknown",
+			proven: false,
+			ref: null
+	}
+	let lattice = generateLattice(0,0,width,height);
+	if(lattice.length > record.coords){
+		record.coords = lattice;
+		record.comment = "Lattice";
+		record.ref = "trivial";
+		if(lattice.length === Math.floor(width*height)){
+			record.proven = true;
+			return record
+		}
+	}
+	/*if(height < 2 && width > 2 && width < 3){
+		let w_gap = width - 2;
+		if(s2 + 1 + (s1 - w_gap)/2 < height && record.coords.length < 3){
+			record.coords = [
+				[0,0,0],
+				[width-1,0,0],
+				[width/2,1-w_gap/2,45],
+			]
+		}
+	}*/
+	if(width > 2){
+		let un_height = height - Math.floor(height) + 1;
+		let w_gap = s1 - 2*(un_height - 1 - s2);
+		if(2 + w_gap <= width){
+			let unit_width = 2*s1 - un_height;
+			let total = 3 + Math.floor((width - 2 - w_gap)/unit_width);
+			if(record.coords.length < total + (Math.floor(height) - 1) * Math.floor(width)){
+				record.coords = [
+					[0,0,0],
+					[1+w_gap/2,1-w_gap/2,45],
+				];
+				for(let i=0;i<total - 3;i++){
+					if(i % 2){
+						record.coords.push([1+w_gap/2 + unit_width + i*unit_width,un_height,-135])
+					}
+					else{
+						record.coords.push([1+w_gap/2 + unit_width + i*unit_width,0,45])
+					}
+				}
+				if(total % 2){
+					record.coords.push([width - 1,0,0])
+				}
+				else{
+					record.coords.push([width - 1,un_height - 1,0])
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 1);j++){
+						record.coords.push([i,un_height + j,0])
+					}
+				}
+
+			}
+		}
+	}
+	if(width > 2 && height > 2 && (width + height - Math.floor(width) - Math.floor(height) >= Math.SQRT2)){//5, +2
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		if(width > 5 && height > 4){
+			if(record.coords.length < Math.floor(width)*Math.ceil(width) + 2){
+				record.coords = [
+					[0,0,0],
+					[1 + w_gap,0,0],
+					[1 + w_gap,1 + h_gap,0],
+					[0,1 + h_gap,0],
+					[1 - h_gap/2,1 + h_gap/2,-45],
+
+					[(5+w_gap)  - 1,(4+h_gap) - 1,0],
+					[(5+w_gap)  - 1 - (1 + w_gap),(4+h_gap)  - 1,0],
+					[(5+w_gap)  - 1 - (1 + w_gap),(4+h_gap)  - 1 - (1 + h_gap),0],
+					[(5+w_gap)  - 1,(4+h_gap)  - 1 - (1 + h_gap),0],
+					[(5+w_gap)  - (1 - h_gap/2),(4+h_gap) - (1 + h_gap/2),135],
+
+					[0,2+h_gap,0],[1,2+h_gap,0],[2,2+h_gap,0],
+					[0,3+h_gap,0],[1,3+h_gap,0],[2,3+h_gap,0],
+					[2+w_gap,0,0],[3+w_gap,0,0],[4+w_gap,0,0],
+					[2+w_gap,1,0],[3+w_gap,1,0],[4+w_gap,1,0],
+				];
+				for(let i=0;i<Math.floor(width - 5 - w_gap);i++){
+					for(let j=0;j<Math.floor(4 + h_gap);j++){
+						record.coords.push([5 + w_gap + i,j,0])
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 4 - h_gap);j++){
+						record.coords.push([i,4 + h_gap + j,0])
+					}
+				}
+			}
+		}
+		else{
+			if(record.coords.length < Math.floor(width)*Math.ceil(width) + 1){
+				record.coords = [
+					[0,0,0],
+					[1 + w_gap,0,0],
+					[1 + w_gap,1 + h_gap,0],
+					[0,1 + h_gap,0],
+					[1 - h_gap/2,1 + h_gap/2,-45],
+				];
+				for(let i=0;i<Math.floor(width - 2 - w_gap);i++){
+					for(let j=0;j<Math.floor(2 + h_gap);j++){
+						record.coords.push([2 + w_gap + i,j,0])
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 2 - h_gap);j++){
+						record.coords.push([i,2 + h_gap + j,0])
+					}
+				}
+			}
+		}
+	}
+	if(width > 4 && width < 5 && height > 2 && height < 3 && record.coords.length < 9){
+		let w_gap = width - 4;
+		if(s1 + s2 + 1 - w_gap/2 <= height){
+			record.coords = [
+				[0,0,0],
+				[1,0,0],
+				[0,1,0],
+				[width - 1,0,0],
+				[width - 2,0,0],
+				[width - 1,1,0],
+				[width/2,1-w_gap/2,45],
+				[width/2 - s2,1-w_gap/2 + s2,45],
+				[width/2 + s2,1-w_gap/2 + s2,45],
+			]
+		}
+	}
+	if(width > 8 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 10*s2 - 6)){//65
+		if(record.coords.length < Math.floor(width)*Math.floor(height) + 1){
+			let h_gap = height - Math.floor(height);
+			let w_gap = width - Math.floor(width);
+			record.coords = [];
+			[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[0,2],[1,2],[0,3]].forEach(loc => {
+				record.coords.push([loc[0],loc[1],0]);
+				record.coords.push([8 + w_gap - loc[0] - 1,loc[1],0]);
+				record.coords.push([8 + w_gap - loc[0] - 1,8 + h_gap - loc[1] - 1,0]);
+				record.coords.push([loc[0],8 + h_gap - loc[1] - 1,0]);
+			});
+			for(let i=0;i<5;i++){
+				for(let j=0;j<5;j++){
+					record.coords.push([1 - h_gap/2 + s2*(i+j), 4 + h_gap/2 + s2*(j-i),-45]);
+				}
+			}
+			for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
+				for(let j=0;j<Math.floor(8 + h_gap);j++){
+					record.coords.push([8 + w_gap + i,j,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+					record.coords.push([i,8 + h_gap + j,0])
+				}
+			}
+		}
+	}
+	if(width > 8 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 8*s1 - 10)){//66
+		if(record.coords.length < Math.floor(width)*Math.floor(height) + 2){
+			let h_gap = height - Math.floor(height);
+			let w_gap = width - Math.floor(width);
+			record.coords = [
+				[0,8+h_gap - 2,0],[0,8+h_gap - 1,0],[1,8+h_gap - 1,0],
+				[6+w_gap,0,0],[7+w_gap,0,0],[7+w_gap,1,0],
+			];
+			[[0,0],[1,0],[2,0],[3,0],[4,0],[0,1],[1,1],[2,1],[3,1],[0,2],[1,2],[2,2],[0,3],[1,3],[0,4]].forEach(loc => {
+				record.coords.push([loc[0],loc[1],0]);
+				record.coords.push([8+w_gap - loc[0] - 1,8+h_gap - loc[1] - 1,0]);
+			});
+			[[5,0],[4,1],[3,2],[2,3],[1,4],[0,5]].forEach(loc => {
+				record.coords.push([8+w_gap - loc[0] - 1,8+h_gap - loc[1] - 1,0]);
+			});
+			for(let i=0;i<8;i++){
+				for(let j=0;j<3;j++){
+					record.coords.push([2+w_gap/2 + s2*i - j*s2,8+h_gap - 1 + w_gap/2 - i*s2 - j*s2,-135]);
+				}
+			}
+			for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
+				for(let j=0;j<Math.floor(8 + h_gap);j++){
+					record.coords.push([8 + w_gap + i,j,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+					record.coords.push([i,8 + h_gap + j,0])
+				}
+			}
+		}
+	}
+	if(width > 9 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 6*s1 - 7)){//76
+		if(record.coords.length < Math.floor(width)*Math.floor(height) + 4){
+			let h_gap = height - Math.floor(height);
+			let w_gap = width - Math.floor(width) + 1;
+			record.coords = [];
+			[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[0,2],[1,2],[0,3]].forEach(loc => {
+				record.coords.push([loc[0],loc[1],0]);
+				record.coords.push([8 + w_gap - loc[0] - 1,loc[1],0]);
+				record.coords.push([8 + w_gap - loc[0] - 1,8 + h_gap - loc[1] - 1,0]);
+				record.coords.push([loc[0],8 + h_gap - loc[1] - 1,0]);
+			});
+			for(let i=0;i<6;i++){
+				for(let j=0;j<6;j++){
+					record.coords.push([1 - h_gap/2 + s2*(i+j), 4 + h_gap/2 + s2*(j-i),-45]);
+				}
+			}
+			for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
+				for(let j=0;j<Math.floor(8 + h_gap);j++){
+					record.coords.push([8 + w_gap + i,j,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+					record.coords.push([i,8 + h_gap + j,0])
+				}
+			}
+		}
+	}
+	if(width > 9 && height > 9 && (width + height - Math.floor(width) - Math.floor(height) >= 14*s2 - 8)){//89
+		if(record.coords.length < Math.floor(width)*Math.floor(height) + 8){
+			let h_gap = height - Math.floor(height);
+			let w_gap = width - Math.floor(width);
+			record.coords = [];
+			[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[0,2],[1,2],[0,3]].forEach(loc => {
+				record.coords.push([loc[0],loc[1],0]);
+				record.coords.push([9 + w_gap - loc[0] - 1,loc[1],0]);
+				record.coords.push([9 + w_gap - loc[0] - 1,9 + h_gap - loc[1] - 1,0]);
+				record.coords.push([loc[0],9 + h_gap - loc[1] - 1,0]);
+			});
+			for(let i=0;i<7;i++){
+				for(let j=0;j<7;j++){
+					record.coords.push([0.5 - h_gap/2 + s2*(i+j), 4.5 + h_gap/2 + s2*(j-i),-45]);
+				}
+			}
+			for(let i=0;i<Math.floor(width - 9 - w_gap);i++){
+				for(let j=0;j<Math.floor(9 + h_gap);j++){
+					record.coords.push([9 + w_gap + i,j,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 9 - h_gap);j++){
+					record.coords.push([i,9 + h_gap + j,0])
+				}
+			}
+		}
+	}
+	if(width > Math.SQRT2*4 && height > Math.SQRT2*4 && (width + height > 6 + Math.SQRT2*4) && record.coords.length < 28){
+		let m = height/2 - 2
+		record.coords = [
+			[0,0,0],
+			[1,0,0],
+			[0,1,0],
+
+			[width - 1,0,0],
+			[width - 2,0,0],
+			[width - 1,1,0],
+
+			[width - 1,height - 1,0],
+			[width - 2,height - 1,0],
+			[width - 1,height - 2,0],
+
+			[0,height - 1,0],
+			[1,height - 1,0],
+			[0,height - 2,0],
+
+			[1-m,2+m,-45],[1-m+s2,2+m-s2,-45],[1-m+s2*2,2+m-s2*2,-45],[1-m+s2*3,2+m-s2*3,-45],
+			[1-m+s2,2+m+s2,-45],[1-m+s2+s2,2+m-s2+s2,-45],[1-m+s2+s2*2,2+m-s2*2+s2,-45],[1-m+s2+s2*3,2+m-s2*3+s2,-45],
+			[1-m+s1,2+m+s1,-45],[1-m+s2+s1,2+m-s2+s1,-45],[1-m+s2*2+s1,2+m-s2*2+s1,-45],[1-m+s2*3+s1,2+m-s2*3+s1,-45],
+			[1-m+s2*3,2+m+s2*3,-45],[1-m+s2+s2*3,2+m-s2+s2*3,-45],[1-m+s2*2+s2*3,2+m-s2*2+s2*3,-45],[1-m+s2*3+s2*3,2+m-s2*3+s2*3,-45],
+		]
+	}
+	if(width > 2 && height > 2){
+		let h_gap = height - Math.floor(height);
+		let w_gap = s1 - h_gap;
+		if(!(w_gap >= 1)){
+			let units = Math.floor((width - 1)/(w_gap + 1));
+			let num = units*3 + 2 + (Math.floor(height) - 2)*Math.floor(width);
+			if(width - units*(w_gap + 1) - 1 > 1){
+				num += 2
+			}
+			if(record.coords.length < num){
+				record.coords = [[0,0,0],[0,1+h_gap,0]];
+				for(let i=0;i<units;i++){
+					record.coords.push([(i+1)*(w_gap + 1),0,0]);
+					record.coords.push([(i+1)*(w_gap + 1),1+h_gap,0]);
+					record.coords.push([(i+1)*(w_gap + 1) - w_gap - h_gap/2,1+h_gap/2,-45]);
+				}
+				if(width - units*(w_gap + 1) - 1 > 1){
+					record.coords.push([units*(w_gap + 1)+1,0,0]);
+					record.coords.push([units*(w_gap + 1)+1,1+h_gap,0]);
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 2);j++){
+						record.coords.push([i,2+h_gap + j,0])
+					}
+				}
+			}
+		}
+	}
+	if(width > 2 && height > 2){
+		let h_gap = height - Math.floor(height);
+		if((h_gap >= s1*2 - 2)){
+			let end_cap = 2 + s1 - h_gap
+			let units = Math.floor((width - end_cap)/(s1));
+			let num = units*3 + 5 + (Math.floor(height) - 2)*Math.floor(width);
+			if(record.coords.length < num){
+				record.coords = [[0,0,0],[0,1+h_gap,0],[width - 1,0,0],[width - 1,1+h_gap,0],[1-h_gap/2,1+h_gap/2,-45]];
+				for(let i=0;i<units;i++){
+					record.coords.push([i*s1 + 1-h_gap/2 + s2,1+h_gap/2-s2,-45]);
+					record.coords.push([i*s1 + 1-h_gap/2 + s2,1+h_gap/2+s2,-45]);
+					record.coords.push([i*s1 + 1-h_gap/2 + s1,1+h_gap/2,-45]);
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 2);j++){
+						record.coords.push([i,2+h_gap + j,0])
+					}
+				}
+			}
+		}
+	}
+
+	if(width > 1 && height > 1){
+		let way1 = gen_slant(width,height);
+		if(way1.length > record.coords.length){
+			record.coords = way1;
+			record.comment = "slant"
+		}
+		let way2 = gen_slant(height,width);
+		if(way2.length > record.coords.length){
+			record.coords = transpose(way2);
+			record.comment = "slant"
+		}
+	}
+	//goebel strip:
+	if(width > 2 && height > 2){
+		let base_board = Math.floor(height) - 1;
+		let h_gap = height - base_board - 1;
+		let secondary = Math.floor(width);
+		let w_gap = width - secondary;
+		if(width - secondary + height - base_board - 1 >= s1){
+			let len = Math.floor(s1 * (base_board - 1) + s1 * h_gap/2 + s1 * w_gap/2);
+			//console.log("gob",len + base_board*base_board + base_board + 2 + (secondary - base_board - 1) * (base_board+1));
+			if(len + base_board*base_board + base_board + 2 + (secondary - base_board - 1) * (base_board+1) > record.coords.length){
+				record.coords = [[base_board + w_gap,0,0],[0,base_board + h_gap,0]];
+				for(let i=0;i<base_board;i++){
+					for(let j=0;i+j<base_board;j++){
+						record.coords.push([i,j,0]);
+						record.coords.push([base_board + w_gap - i,base_board + h_gap - j,0]);
+					}
+				}
+				for(let i=0;i<len;i++){
+					record.coords.push([1-h_gap/2 + i*s2,base_board + h_gap/2 - i*s2,-45]);
+				}
+				for(let i=0;i<(secondary - base_board - 1);i++){
+					for(let j=0;j<(base_board+1);j++){
+						record.coords.push([base_board + w_gap + 1+i,j,0])
+					}
+				}
+			}
+		}
+	}
+	squareList.forEach(arr => {
+		if(width >= arr.x && height >= arr.y){
+			if(record.coords.length < arr.n + Math.floor(width - arr.x)*Math.floor(arr.y) + Math.floor(height - arr.y)*Math.floor(width)){
+				record.coords = arr.coords.map(a => a);
+				for(let i=0;i<Math.floor(width - arr.x);i++){
+					for(let j=0;j<Math.floor(arr.y);j++){
+						record.coords.push([arr.x+i,j,0])
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - arr.y);j++){
+						record.coords.push([i,arr.y + j,0])
+					}
+				}
+			}
+			let numa = Math.floor(width/arr.x);
+			if(record.coords.length < arr.n*numa + Math.floor(width - arr.x*numa)*Math.floor(arr.y) + Math.floor(height - arr.y)*Math.floor(width)){
+				record.coords = arr.coords.map(a => a);
+				for(let i=1;i<numa;i++){
+					record.coords = record.coords.concat(arr.coords.map(a => [a[0]+i*arr.x,a[1],a[2]]))
+				}
+				for(let i=0;i<Math.floor(width - arr.x*numa);i++){
+					for(let j=0;j<Math.floor(arr.y);j++){
+						record.coords.push([arr.x*numa+i,j,0])
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - arr.y);j++){
+						record.coords.push([i,arr.y + j,0])
+					}
+				}
+			}
+		}
+	})
+	return record
+}
+const svgNS = "http://www.w3.org/2000/svg";
+let illustration = document.createElementNS(svgNS,"svg");
+svgContainer.appendChild(illustration);
+let dimensions = {
+	width: 600,
+	height: 600,
+	margin: 10,
+	scale: 100,
+};
+function plotSquares(info,width,height){
+	//console.log(info);
+	removeChildren(illustration);
+	/*let scale = Math.min(
+		(dimensions.width - dimensions.margin*2)/width,
+		(dimensions.height - dimensions.margin*2)/height
+	)
+	illustration.style.width = dimensions.width + "px";
+	illustration.style.height = dimensions.height + "px";
+	illustration.setAttributeNS(null,"viewBox",-dimensions.margin + " " + (-dimensions.margin) + " " + dimensions.width + " " + dimensions.height);
+	svgContainer.style.width = dimensions.width + "px";
+	svgContainer.style.height = dimensions.height + "px";*/
+	let scale = dimensions.scale;
+	illustration.style.width = (width*dimensions.scale + dimensions.margin*2) + "px";
+	illustration.style.height = (height*dimensions.scale + dimensions.margin*2) + "px";
+	illustration.setAttributeNS(null,"viewBox",-dimensions.margin + " " + (-dimensions.margin) + " " + (width*dimensions.scale + dimensions.margin*2) + " " + (height*dimensions.scale + dimensions.margin*2));
+	svgContainer.style.width = width*dimensions.scale + dimensions.margin*2 + "px";
+	svgContainer.style.height = height*dimensions.scale + dimensions.margin*2 + "px";
+	let cont = document.createElementNS(svgNS,"rect");
+	cont.setAttributeNS(null,"stroke","blue");
+	cont.setAttributeNS(null,"fill","none");
+	cont.setAttributeNS(null,"x",0);
+	cont.setAttributeNS(null,"y",0);
+	cont.setAttributeNS(null,"width",width*scale);
+	cont.setAttributeNS(null,"height",height*scale);
+	illustration.appendChild(cont);
+	if(height > width){
+		info.coords = transpose(info.coords)
+	}
+	info.coords.forEach(s => {
+		let square = document.createElementNS(svgNS,"rect");
+		square.setAttributeNS(null,"stroke","black");
+		square.setAttributeNS(null,"fill","green");
+		square.setAttributeNS(null,"x",s[0]*scale);
+		square.setAttributeNS(null,"y",s[1]*scale);
+		square.setAttributeNS(null,"width",scale);
+		square.setAttributeNS(null,"height",scale);
+		if(s[2] !== 0){
+			if(s[2] === -45 || s[2] === -135 || s[2] === 45 || s[2] === 135 || s[2] === 225){
+				square.setAttributeNS(null,"fill","blue");
+				square.setAttributeNS(null,"transform","rotate(" + s[2] + "," + s[0]*scale + "," + s[1]*scale +  ")");
+			}
+			else{
+				square.setAttributeNS(null,"fill","red");
+				//square.setAttributeNS(null,"fill","black");
+				square.setAttributeNS(null,"transform","rotate(" + (s[2]) +"," + s[0]*scale + "," + s[1]*scale +  ")");
+			}
+		}
+		illustration.appendChild(square)
+	})
+	efficiency.innerText = "n = " + info.coords.length + ", density: " + (100 * info.coords.length/(width*height)).toPrecision(4) + "%";
+	comment.innerText = info.comment;
+}
+let rfunk = function(){
+	//console.log("ro");
+	let rect = svgContainer.getClientRects();
+	let newWidth = ((rect[0].width - dimensions.margin*2)/dimensions.scale);
+	let newHeight = ((rect[0].height - dimensions.margin*2)/dimensions.scale);
+	//console.log(newWidth,widthInput.value);
+	if(newWidth != widthInput.value || newHeight != heightInput.value){
+		widthInput.value = newWidth;
+		heightInput.value = newHeight;
+		updateDimensions();
+	}
+}
+let obe = new ResizeObserver(rfunk);
+obe.observe(svgContainer);	
+function updateDimensions(){
+	//console.log("ud");
+	width = parseFloat(widthInput.value) || 1;
+	if(squareInput.checked){
+		height = parseFloat(widthInput.value) || 1;
+		heightInput.style.opacity = "0.5";
+	}
+	else{
+		heightInput.style.opacity = "1";
+		height = parseFloat(heightInput.value) || 1;
+	}
+	obe.unobserve(svgContainer);
+	plotSquares(getSquares(Math.max(width,height),Math.min(width,height)),width,height);
+	obe.observe(svgContainer);
+}
+svgContainer.style.width = (widthInput.value || 1)*dimensions.scale + dimensions.margin*2 + "px";
+svgContainer.style.height = (heightInput.value || 1)*dimensions.scale + dimensions.margin*2 + "px";
+illustration.setAttributeNS(null,"viewBox",-dimensions.margin + " " + (-dimensions.margin) + " " + ((widthInput.value || 1)*dimensions.scale + dimensions.margin*2) + " " + ((heightInput.value || 1)*dimensions.scale + dimensions.margin*2));
+widthInput.oninput = updateDimensions;
+heightInput.oninput = updateDimensions;
+squareInput.oninput = updateDimensions;
+updateDimensions();
+
+function rand(){
+	widthInput.value = 1.5 + Math.random()*10;
+	heightInput.value = 1.5 + Math.random()*10;
+	updateDimensions()
+}
+</script>
+</body>
+</html>

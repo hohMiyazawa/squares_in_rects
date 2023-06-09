@@ -631,47 +631,42 @@ function getSquares(width,height){
 		}
 	}
 	if(width > 8 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 10*s2 - 6)){//65
-		if(record.coords.length < Math.floor(width)*Math.floor(height) + 1){
-			let h_gap = height - Math.floor(height);
-			let w_gap = width - Math.floor(width);
-			let boost = [];
-			[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[0,2],[1,2],[0,3]].forEach(loc => {
-				boost.push([loc[0],loc[1],0]);
-				boost.push([8 + w_gap - loc[0] - 1,loc[1],0]);
-				boost.push([8 + w_gap - loc[0] - 1,8 + h_gap - loc[1] - 1,0]);
-				boost.push([loc[0],8 + h_gap - loc[1] - 1,0]);
-			});
-			for(let i=0;i<5;i++){
-				for(let j=0;j<5;j++){
-					boost.push([1 - h_gap/2 + s2*(i+j), 4 + h_gap/2 + s2*(j-i),-45]);
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let boost = [];
+		[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[0,2],[1,2],[0,3]].forEach(loc => {
+			boost.push([loc[0],loc[1],0]);
+			boost.push([8 + w_gap - loc[0] - 1,loc[1],0]);
+			boost.push([8 + w_gap - loc[0] - 1,8 + h_gap - loc[1] - 1,0]);
+			boost.push([loc[0],8 + h_gap - loc[1] - 1,0]);
+		});
+		for(let i=0;i<5;i++){
+			for(let j=0;j<5;j++){
+				boost.push([1 - h_gap/2 + s2*(i+j), 4 + h_gap/2 + s2*(j-i),-45]);
+			}
+		}
+		for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
+			for(let j=0;j<Math.floor(8 + h_gap);j++){
+				boost.push([8 + w_gap + i,j,0])
+			}
+		}
+		if(width > 9){
+			for(let i=0;i<9;i++){
+				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+					boost.push([i,8 + h_gap + j,0])
 				}
 			}
-			for(let i=0;i<Math.floor(width - 8 - w_gap);i++){
-				for(let j=0;j<Math.floor(8 + h_gap);j++){
-					boost.push([8 + w_gap + i,j,0])
+			boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
+		}
+		else{
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
+					boost.push([i,8 + h_gap + j,0])
 				}
 			}
-			if(width > 9){
-				for(let i=0;i<9;i++){
-					for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
-						boost.push([i,8 + h_gap + j,0])
-					}
-				}
-				boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
-			}
-			else{
-				for(let i=0;i<Math.floor(width);i++){
-					for(let j=0;j<Math.floor(height - 8 - h_gap);j++){
-						boost.push([i,8 + h_gap + j,0])
-					}
-				}
-			}
-			if(boost.length > record.coords.length){
-				record.coords = boost
-			}
-			if(boost.length > record.coords.length){
-				record.coords = boost
-			}
+		}
+		if(boost.length > record.coords.length){
+			record.coords = boost
 		}
 	}
 	if(width > 8 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 8*s1 - 10)){//66
@@ -773,6 +768,90 @@ function getSquares(width,height){
 			}
 		}
 	}
+	if(width > 12 && height > 12 && (width + height - Math.floor(width) - Math.floor(height) >= 8*s1 - 10)){//148
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let boost = [];
+		for(let i=0;i<6;i++){
+			for(let j=0;j+i<6;j++){
+				boost.push([i,j,0]);
+				boost.push([12 + w_gap - i - 1,j,0]);
+				boost.push([12 + w_gap - i - 1,12 + h_gap - j - 1,0]);
+				boost.push([i,12 + h_gap - j - 1,0]);
+			}
+		}
+		for(let i=0;i<8;i++){
+			for(let j=0;j<8;j++){
+				boost.push([1 - h_gap/2 + s2*(i+j), 6 + h_gap/2 + s2*(j-i),-45]);
+			}
+		}
+		for(let i=0;i<Math.floor(width - 12- w_gap);i++){
+			for(let j=0;j<Math.floor(12 + h_gap);j++){
+				boost.push([12 + w_gap + i,j,0])
+			}
+		}
+		if(width > 13){
+			for(let i=0;i<13;i++){
+				for(let j=0;j<Math.floor(height - 12 - h_gap);j++){
+					boost.push([i,12 + h_gap + j,0])
+				}
+			}
+			boost = boost.concat(getSquares(width - 13,height-12).coords.map(a => [a[0] + 13,a[1] + 12,a[2]]))
+		}
+		else{
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 12 - h_gap);j++){
+					boost.push([i,12 + h_gap + j,0])
+				}
+			}
+		}
+		if(boost.length > record.coords.length){
+			record.coords = boost
+		}
+	}
+	[[16,11],[20,14],[22,15],[26,18],[30,21],[32,22],[34,24],[36,25],[40,28],[42,29]].forEach(pair => {//some goebel squares	
+		if(width > pair[0] && height > pair[0] && (width + height - Math.floor(width) - Math.floor(height) >= (pair[1] - s1*(pair[0]/2-1))/2 * s1*2)){//göbel
+			let h_gap = height - Math.floor(height);
+			let w_gap = width - Math.floor(width);
+			let boost = [];
+			for(let i=0;i<pair[0]/2;i++){
+				for(let j=0;j+i<pair[0]/2;j++){
+					boost.push([i,j,0]);
+					boost.push([pair[0] + w_gap - i - 1,j,0]);
+					boost.push([pair[0] + w_gap - i - 1,pair[0] + h_gap - j - 1,0]);
+					boost.push([i,pair[0] + h_gap - j - 1,0]);
+				}
+			}
+			for(let i=0;i<pair[1];i++){
+				for(let j=0;j<pair[1];j++){
+					boost.push([1 - h_gap/2 + s2*(i+j), pair[0]/2 + h_gap/2 + s2*(j-i),-45]);
+				}
+			}
+			for(let i=0;i<Math.floor(width - pair[0]- w_gap);i++){
+				for(let j=0;j<Math.floor(pair[0] + h_gap);j++){
+					boost.push([pair[0] + w_gap + i,j,0])
+				}
+			}
+			if(width > pair[0]+1){
+				for(let i=0;i<pair[0]+1;i++){
+					for(let j=0;j<Math.floor(height - pair[0] - h_gap);j++){
+						boost.push([i,pair[0] + h_gap + j,0])
+					}
+				}
+				boost = boost.concat(getSquares(width - pair[0]-1,height-pair[0]).coords.map(a => [a[0] + pair[0]+1,a[1] + pair[0],a[2]]))
+			}
+			else{
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - pair[0] - h_gap);j++){
+						boost.push([i,pair[0] + h_gap + j,0])
+					}
+				}
+			}
+			if(boost.length > record.coords.length){
+				record.coords = boost
+			}
+		}
+	})
 	if(width > Math.SQRT2*4 && height > Math.SQRT2*4 && (width + height > 6 + Math.SQRT2*4) && record.coords.length < 28){
 		let m = height/2 - 2
 		record.coords = [
@@ -1009,17 +1088,17 @@ function updateDimensions(){
 	width = parseFloat(widthInput.value) || 1;
 	if(squareInput.checked){
 		height = parseFloat(widthInput.value) || 1;
-		if(height > 200){
-			return
-		}
 		heightInput.style.opacity = "0.5";
 	}
 	else{
 		heightInput.style.opacity = "1";
 		height = parseFloat(heightInput.value) || 1;
-		if(width > 200){
-			return
-		}
+	}
+	if(height > 200){
+		return
+	}
+	if(width > 200){
+		return
 	}
 	obe.unobserve(svgContainer);
 	plotSquares(getSquares(Math.max(width,height),Math.min(width,height)),width,height);

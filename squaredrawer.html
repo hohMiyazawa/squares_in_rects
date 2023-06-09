@@ -453,49 +453,48 @@ function gen_slant(width,height){
 	let end_cap = c + base_len * s;
 	if(end_cap < width){
 		let units = Math.floor((width - end_cap) * c);
-		let slag = width - end_cap - units/c;
-		let end_height = Math.max(0,height - s - c/s);
-		let end_height_a = Math.max(0,height - s - (c/s*2));
-		let end_height_b = Math.max(0,height - s - (c/s*3));
-		let end_height_c = Math.max(0,height - s - (c/s*4));
-		let end_height_d = Math.max(0,height - s - (c/s*5));
-		let end_height2 = Math.max(0,height - s - c/s * (1 - slag));
-		let end_height3 = Math.max(0,height - s - c/s * (2 - slag));
-		let end_height4 = Math.max(0,height - s - c/s * (3 - slag));
-		let end_height5 = Math.max(0,height - s - c/s * (4 - slag));
 		let coords = [];
+		let base = height - s;
+		let counter = 0;
+		let mini = [];
+		while(base > 0){
+			base -= c/s;
+			for(let i=0;i<Math.max(0,Math.floor(base));i++){
+				mini.push([counter,i,0])
+			}
+			counter++
+		}
+		let mini2 = [];
+		base = base_len;
+		counter = 0;
 		let ang = 180*((angle)/Math.PI)
+		while(base > 0){
+			base -= c/s + s/c;
+			counter++;
+			for(let i=0;i<Math.max(0,Math.floor(base));i++){
+				mini2.push([(base_len-1)*s - i*s - counter/c,i*c + c,-ang])
+			}
+		}
+		if(mini2.length > mini.length){
+			coords = coords.concat(mini2);
+		}
+		else{
+			coords = coords.concat(mini);
+		}
+		let slag = width - end_cap - units/c;
+		base = height - s + c/s * slag;
+		counter = 0;
+		while(base > 0){
+			base -= c/s;
+			counter++
+			for(let i=0;i<Math.max(0,Math.floor(base));i++){
+				coords.push([width - counter,height - i - 1,0])
+			}
+		}
 		for(let i=0;i<=units;i++){
 			for(let j=0;j<base_len;j++){
 				coords.push([i/c + j*s,height - s - j*c,-ang])
 			}
-		}
-		for(let i=0;i<Math.floor(end_height);i++){
-			coords.push([0,i,0])
-		}
-		for(let i=0;i<Math.floor(end_height_a);i++){
-			coords.push([1,i,0])
-		}
-		for(let i=0;i<Math.floor(end_height_b);i++){
-			coords.push([2,i,0])
-		}
-		for(let i=0;i<Math.floor(end_height_c);i++){
-			coords.push([3,i,0])
-		}
-		for(let i=0;i<Math.floor(end_height_d);i++){
-			coords.push([4,i,0])
-		}
-		for(let i=0;i<Math.floor(end_height2);i++){
-			coords.push([width - 1,height - i - 1,0])
-		}
-		for(let i=0;i<Math.floor(end_height3);i++){
-			coords.push([width - 2,height - i - 1,0])
-		}
-		for(let i=0;i<Math.floor(end_height4);i++){
-			coords.push([width - 3,height - i - 1,0])
-		}
-		for(let i=0;i<Math.floor(end_height5);i++){
-			coords.push([width - 4,height - i - 1,0])
 		}
 		return coords;
 	}

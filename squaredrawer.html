@@ -671,6 +671,111 @@ function getSquares(width,height){
 			]
 		}
 	}
+	if(width > 3 && height > 3 && record.coords.length < Math.floor(width) * Math.floor(height) + 1){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let alf = (w_gap * h_gap * h_gap)/(w_gap*w_gap + h_gap*h_gap);
+		let ang = Math.atan(h_gap/w_gap);
+		let x1 = 1 - alf;
+		let y1 = 1 + alf*h_gap/w_gap;
+		let avs = x1 + Math.cos(ang) + Math.sin(ang) - (3 + w_gap)/2;
+		let hogh = avs*h_gap/w_gap + y1 - Math.sin(ang) + Math.cos(ang);
+		if(h_gap*h_gap + w_gap*w_gap >= 1 && hogh <= (3 + h_gap)/2){
+			record.coords = [
+				[0,0,0],
+				[(3 + w_gap) - 1,0,0],
+				[(3 + w_gap) - 2,0,0],
+				[(3 + w_gap) - 1,1,0],
+				[0,(3 + h_gap) - 2,0],
+				[0,(3 + h_gap) - 1,0],
+				[1,(3 + h_gap) - 1,0],
+				[(3 + w_gap) - 1,(3 + h_gap) - 1,0],
+				[x1,y1,-ang*180/Math.PI],
+				[(3 + w_gap) - x1,(3 + h_gap) - y1,180 -ang*180/Math.PI],
+			]
+			for(let i=0;i<Math.floor(width - 3 - w_gap);i++){
+				for(let j=0;j<Math.floor(3 + h_gap);j++){
+					record.coords.push([3 + w_gap + i,j,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 3 - h_gap);j++){
+					record.coords.push([i,j + 3 + h_gap,0])
+				}
+			}
+		}
+	}
+	if(width > 7 && height > 6 && record.coords.length < Math.floor(width) * Math.floor(height) + 2){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let alf = (w_gap * h_gap * h_gap)/(w_gap*w_gap + h_gap*h_gap);
+		let ang = Math.atan(h_gap/w_gap);
+		let x1 = 1 - alf;
+		let y1 = 1 + alf*h_gap/w_gap;
+		let avs = x1 + Math.cos(ang) + Math.sin(ang) - (3 + w_gap)/2;
+		let hogh = avs*h_gap/w_gap + y1 - Math.sin(ang) + Math.cos(ang);
+		if(h_gap*h_gap + w_gap*w_gap >= 1 && hogh <= (3 + h_gap)/2){
+			record.coords = [
+				[0,0,0],
+				[(3 + w_gap) - 1,0,0],
+				[(3 + w_gap) - 2,0,0],
+				[(3 + w_gap) - 1,1,0],
+				[0,(3 + h_gap) - 2,0],
+				[0,(3 + h_gap) - 1,0],
+				[1,(3 + h_gap) - 1,0],
+				[(3 + w_gap) - 1,(3 + h_gap) - 1,0],
+				[x1,y1,-ang*180/Math.PI],
+				[(3 + w_gap) - x1,(3 + h_gap) - y1,180 -ang*180/Math.PI],
+
+				[4,3,0],
+				[4+(3 + w_gap) - 1,3,0],
+				[4+(3 + w_gap) - 2,3,0],
+				[4+(3 + w_gap) - 1,4,0],
+				[4,(3 + h_gap) - 2+3,0],
+				[4,(3 + h_gap) - 1+3,0],
+				[5,(3 + h_gap) - 1+3,0],
+				[4+(3 + w_gap) - 1,3+(3 + h_gap) - 1,0],
+				[4+x1,3+y1,-ang*180/Math.PI],
+				[4+(3 + w_gap) - x1,3+(3 + h_gap) - y1,180 -ang*180/Math.PI],
+
+				[3+w_gap,0,0],
+				[4+w_gap,0,0],
+				[5+w_gap,0,0],
+				[6+w_gap,0,0],
+				[3+w_gap,1,0],
+				[4+w_gap,1,0],
+				[5+w_gap,1,0],
+				[6+w_gap,1,0],
+				[3+w_gap,2,0],
+				[4+w_gap,2,0],
+				[5+w_gap,2,0],
+				[6+w_gap,2,0],
+
+				[0,3+h_gap,0],
+				[1,3+h_gap,0],
+				[2,3+h_gap,0],
+				[3,3+h_gap,0],
+				[0,4+h_gap,0],
+				[1,4+h_gap,0],
+				[2,4+h_gap,0],
+				[3,4+h_gap,0],
+				[0,5+h_gap,0],
+				[1,5+h_gap,0],
+				[2,5+h_gap,0],
+				[3,5+h_gap,0],
+			]
+			for(let i=0;i<Math.floor(width - 7 - w_gap);i++){
+				for(let j=0;j<Math.floor(6 + h_gap);j++){
+					record.coords.push([7 + w_gap + i,j,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 6 - h_gap);j++){
+					record.coords.push([i,j + 6 + h_gap,0])
+				}
+			}
+		}
+	}
 	if(width > 5 && height > 4 && (width + height - Math.floor(width) - Math.floor(height) >= 3*s1 - 3)){//21
 		if(record.coords.length < Math.floor(width)*Math.floor(height) + 1){
 			let h_gap = height - Math.floor(height);

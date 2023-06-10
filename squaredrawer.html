@@ -644,9 +644,9 @@ function getSquares(width,height){
 				}
 			}
 		}
-		if(Math.floor(height) % 2){
+		for(let j=0;j<Math.floor(height - Math.floor(cel_num)*2 - h_gap);j++){
 			for(let i=0;i<Math.floor(width);i++){
-				record.coords.push([i,height - 1,0])
+				record.coords.push([i,height - 1 - j,0])
 			}
 		}
 		for(let i=0;i < Math.floor(width) - 3*cel_num + 1;i++){

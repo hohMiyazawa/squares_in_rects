@@ -1214,6 +1214,104 @@ function getSquares(width,height){
 			}
 		}
 	}
+	//slanted göbel strip
+	if(width > 2 && height > 2){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		if(h_gap*h_gap + w_gap*w_gap >= 1){
+			let alf = (w_gap * h_gap * h_gap)/(w_gap*w_gap + h_gap*h_gap);
+			let ang = Math.atan(h_gap/w_gap);
+			let diag = Math.hypot(Math.floor(height) + w_gap - 2,height - 2);
+			let ang2 = Math.acos((height - 2)/diag);
+			let diff_ang = ang2 - ang;
+			let diffComp = Math.cos(diff_ang);
+			let real_diag = diag*diffComp;
+			let count = Math.floor(width)*Math.floor(height) - Math.floor(height) + 2 + Math.floor(real_diag);
+			//console.log("real",real_diag,diag);
+			//console.log("ang",ang*180/Math.PI,ang2*180/Math.PI);
+			if(count > record.coords.length){
+				record.coords = [[0,0,0],[Math.floor(height) + w_gap - 1,height - 1,0]];
+				let stair = Math.floor(height) - 1;
+				for(let i=0;i<stair;i++){
+					for(let j=0;j+i<stair;j++){
+						record.coords.push([j,height - 1 - i,0])
+						record.coords.push([Math.floor(height) + w_gap - 1 - j,i,0])
+					}
+				}
+				let x1 = 1 - alf;
+				let y1 = 1 + alf*h_gap/w_gap;
+				let c = Math.cos(ang);
+				let s = Math.sin(ang);
+				record.coords.push([x1,y1,-ang*180/Math.PI]);
+				if(w_gap > h_gap){
+					let cx = x1 + s;
+					let cy = y1 + c;
+					for(let i = 1;i<Math.floor(real_diag);i++){
+						let diff = 1 - ((cy - 1 - h_gap) % 1);
+						if(diff < c){
+							let future = cx + diff*s/c;
+							let hylle = Math.floor(cy - 1 - h_gap) + 2;
+							let bon1 = (hylle - future);
+							let diff2 = (c - diff)*(s/c + c/s);
+							if(diff2 < bon1){
+								record.coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+								cx += bon1*c*c;
+								cy -= bon1*c*s;
+							}
+							else{
+								cx += bon1*c*c;
+								cy -= bon1*c*s;
+								record.coords.push([cx,cy,-ang*180/Math.PI]);
+							}
+						}
+						else{
+							record.coords.push([cx,cy,-ang*180/Math.PI]);
+						}
+						cx += s;
+						cy += c;
+					}
+				}
+				else{
+					let cx = x1 + s + c;
+					let cy = y1 - s + c;
+					//console.log("a",x1,y1);
+					for(let i = 1;i<Math.floor(real_diag);i++){
+						let diff = 1 - ((cx - 1 - w_gap) % 1);
+						//console.log("diff c 2", diff,c,s);
+						if(diff < s){
+							let future = cy + diff*c/s;
+							let hylle = Math.floor(cx - 1 - w_gap) + 2;
+							let bon1 = (hylle - future);
+							let diff2 = (s - diff)*(s/c + c/s);
+							if(diff2 < bon1){
+								record.coords.push([cx-diff2*c*s,cy+diff2*s*s,90-ang*180/Math.PI]);
+								cy += bon1*s*s;
+								cx -= bon1*c*s;
+							}
+							else{
+								cy += (hylle - future)*s*s;
+								cx -= (hylle - future)*c*s;
+								record.coords.push([cx,cy,90-ang*180/Math.PI]);
+							}
+						}
+						else{
+							record.coords.push([cx,cy,90-ang*180/Math.PI]);
+						}
+						cx += s;
+						cy += c;
+					}
+				}
+				for(let i=0;i<Math.floor(width - Math.floor(height) - w_gap);i++){
+					for(let j=0;j<Math.floor(height);j++){
+						record.coords.push([i + w_gap + Math.floor(height),j,0]);
+					}
+				}
+				if(record.coords.length < count){
+					throw "uhoh..."
+				}
+			}
+		}
+	}
 	//göbel strip x2:
 	if(width > 3 && height > 3 && (width + height - Math.floor(width) - Math.floor(height)) >= 2*s1 - 1){
 		let h_gap = height - Math.floor(width);
@@ -1332,6 +1430,7 @@ function plotSquares(info,width,height){
 	info.coords.forEach(s => {
 		let square = document.createElementNS(svgNS,"rect");
 		square.setAttributeNS(null,"stroke","black");
+		//square.setAttributeNS(null,"stroke-width","0.1");
 		square.setAttributeNS(null,"fill","green");
 		square.setAttributeNS(null,"x",s[0]*scale);
 		square.setAttributeNS(null,"y",s[1]*scale);

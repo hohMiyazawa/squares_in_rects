@@ -487,6 +487,10 @@ function transpose(list){
 	return list.map(a => [a[1],a[0],-a[2]]);
 }
 
+function translate(list,x,y){
+	return list.map(a => [a[0] + x,a[1] + y,a[2]]);
+}
+
 function gen_slant3(width,height){
 	let angle = Math.asin(height/Math.sqrt(10)) - Math.asin(1/Math.sqrt(10));
 	let c = Math.cos(Math.PI/2 - angle);
@@ -599,7 +603,19 @@ function gen_slant(width,height){
 	return []
 }
 
-function getSquares(width,height){
+function graham(width,height){
+	let inner = Math.round(height - Math.pow(height,8/11));
+	let section1 = gen_slant(width,height - inner);
+	section1 = section1.concat(translate(transpose(gen_slant(inner,width - inner)), inner, height - inner));
+	for(let i=0;i<inner;i++){
+		for(let j=0;j<inner;j++){
+			section1.push([i,height - inner + j,0])
+		}
+	}
+	return section1
+}
+
+function getSquares(width,height,recursive){
 	if(width < 1 || height < 1){
 		return {
 			coords: [],
@@ -917,7 +933,7 @@ function getSquares(width,height){
 					boost.push([i,8 + h_gap + j,0])
 				}
 			}
-			boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
+			boost = boost.concat(getSquares(width - 9,height-8,true).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
 		}
 		else{
 			for(let i=0;i<Math.floor(width);i++){
@@ -960,7 +976,7 @@ function getSquares(width,height){
 					boost.push([i,8 + h_gap + j,0])
 				}
 			}
-			boost = boost.concat(getSquares(width - 9,height-8).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
+			boost = boost.concat(getSquares(width - 9,height-8,true).coords.map(a => [a[0] + 9,a[1] + 8,a[2]]))
 		}
 		else{
 			for(let i=0;i<Math.floor(width);i++){
@@ -1117,7 +1133,7 @@ function getSquares(width,height){
 					boost.push([i,12 + h_gap + j,0])
 				}
 			}
-			boost = boost.concat(getSquares(width - 13,height-12).coords.map(a => [a[0] + 13,a[1] + 12,a[2]]))
+			boost = boost.concat(getSquares(width - 13,height-12,true).coords.map(a => [a[0] + 13,a[1] + 12,a[2]]))
 		}
 		else{
 			for(let i=0;i<Math.floor(width);i++){
@@ -1159,7 +1175,7 @@ function getSquares(width,height){
 						boost.push([i,pair[0] + h_gap + j,0])
 					}
 				}
-				boost = boost.concat(getSquares(width - pair[0]-1,height-pair[0]).coords.map(a => [a[0] + pair[0]+1,a[1] + pair[0],a[2]]))
+				boost = boost.concat(getSquares(width - pair[0]-1,height-pair[0],true).coords.map(a => [a[0] + pair[0]+1,a[1] + pair[0],a[2]]))
 			}
 			else{
 				for(let i=0;i<Math.floor(width);i++){
@@ -1461,6 +1477,12 @@ function getSquares(width,height){
 			}
 		}
 	})
+	if(width > 8 && height > 8 && !recursive){
+		let biggie = graham(width,height);
+		if(biggie.length > record.coords.length){
+			record.coords = biggie
+		}
+	}
 	return record
 }
 const svgNS = "http://www.w3.org/2000/svg";

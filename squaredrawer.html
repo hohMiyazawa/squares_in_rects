@@ -487,7 +487,49 @@ function transpose(list){
 	return list.map(a => [a[1],a[0],-a[2]]);
 }
 
+function gen_slant3(width,height){
+	let angle = Math.asin(height/Math.sqrt(10)) - Math.asin(1/Math.sqrt(10));
+	let c = Math.cos(Math.PI/2 - angle);
+	let s = Math.sin(Math.PI/2 - angle);
+	let end_cap = c + 3 * s;
+	let safety1 = 3*s - s/c - 1;
+	let safety2 = (s + c -1)*c/s + s - 1;
+	let safetyFix = Math.min(safety1,safety2);
+	end_cap -= safetyFix;
+	if(end_cap < width){
+		let units = Math.floor((width - end_cap) * c);
+		let coords = [[0,0,0]];
+		let base = height - s;
+		let slag = width - end_cap - units/c;
+		base = height - s + c/s * slag;
+		let counter = 0;
+		let ang = 180*((angle)/Math.PI)
+		while(base > 0){
+			base -= c/s;
+			counter++
+			for(let i=0;i<Math.max(0,Math.floor(base));i++){
+				coords.push([width - counter,height - i - 1,0])
+			}
+		}
+		for(let i=0;i<=units;i++){
+			for(let j=0;j<3;j++){
+				if(i === 0 && j === 0){
+					coords.push([0,height - 1,0])
+				}
+				else{
+					coords.push([i/c + j*s-safetyFix,height - s - j*c,-ang])
+				}
+			}
+		}
+		return coords;
+	}
+	return []
+}
+
 function gen_slant(width,height){
+	if(height < 3){
+		return gen_slant3(width,height)
+	}
 	let base_len = Math.floor(height) + 1;
 	let angle = Math.asin(height/Math.sqrt(base_len*base_len + 1)) - Math.asin(1/Math.sqrt(base_len*base_len + 1));
 	let c = Math.cos(Math.PI/2 - angle);
@@ -535,7 +577,21 @@ function gen_slant(width,height){
 		}
 		for(let i=0;i<=units;i++){
 			for(let j=0;j<base_len;j++){
-				coords.push([i/c + j*s,height - s - j*c,-ang])
+				if(i === 0 && j === 0){
+					coords.push([0,height - 1,0])
+				}
+				else{
+					coords.push([i/c + j*s,height - s - j*c,-ang])
+				}
+			}
+		}
+		if(height - 1 > 1){
+			let lesser = gen_slant(width,height - 1);
+			if(lesser.length + Math.floor(width) > coords.length){
+				coords = lesser;
+				for(let i=0;i<Math.floor(width);i++){
+					coords.push([i,height - 1,0])
+				}
 			}
 		}
 		return coords;
@@ -1588,8 +1644,8 @@ function triangleFill3(a,b){
 
 function teff(){
 	let canvas = document.getElementById("triangle");
-	canvas.width = 2000;
-	canvas.height = 2000;
+	canvas.width = 1500;
+	canvas.height = 1500;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);

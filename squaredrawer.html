@@ -948,6 +948,62 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
+	if(width > 11 && height > 9 && record.coords.length < Math.floor(width) * Math.floor(height) + 3){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let alf = (w_gap * h_gap * h_gap)/(w_gap*w_gap + h_gap*h_gap);
+		let ang = Math.atan(h_gap/w_gap);
+		let x1 = 1 - alf;
+		let y1 = 1 + alf*h_gap/w_gap;
+		let avs = x1 + Math.cos(ang) + Math.sin(ang) - (3 + w_gap)/2;
+		let hogh = avs*h_gap/w_gap + y1 - Math.sin(ang) + Math.cos(ang);
+		if(h_gap*h_gap + w_gap*w_gap >= 1 && hogh <= (3 + h_gap)/2){
+			record.coords = [
+				[0,0,0],
+				[(3 + w_gap) - 1,0,0],
+				[(3 + w_gap) - 2,0,0],
+				[(3 + w_gap) - 1,1,0],
+				[0,(3 + h_gap) - 2,0],
+				[0,(3 + h_gap) - 1,0],
+				[1,(3 + h_gap) - 1,0],
+				[(3 + w_gap) - 1,(3 + h_gap) - 1,0],
+				[x1,y1,-ang*180/Math.PI],
+				[(3 + w_gap) - x1,(3 + h_gap) - y1,180 -ang*180/Math.PI],
+			]
+			for(let u=1;u<=2;u++){
+				record.coords.push([4*u + 0,3*u,0]);
+				record.coords.push([4*u + (3 + w_gap) - 1,3*u,0]);
+				record.coords.push([4*u + (3 + w_gap) - 2,3*u,0]);
+				record.coords.push([4*u + (3 + w_gap) - 1,3*u+1,0]);
+				record.coords.push([4*u + 0,3*u+(3 + h_gap) - 2,0]);
+				record.coords.push([4*u + 0,3*u+(3 + h_gap) - 1,0]);
+				record.coords.push([4*u + 1,3*u+(3 + h_gap) - 1,0]);
+				record.coords.push([4*u + (3 + w_gap) - 1,3*u+(3 + h_gap) - 1,0]);
+				record.coords.push([4*u + x1,3*u+y1,-ang*180/Math.PI]);
+				record.coords.push([4*u + (3 + w_gap) - x1,3*u+(3 + h_gap) - y1,180 -ang*180/Math.PI]);
+				for(let i=0;i<4;i++){
+					for(let j=0;j<3*u;j++){
+						record.coords.push([u*4 + i -1+w_gap,j,0]);
+					}
+				}
+				for(let i=0;i<4*u;i++){
+					for(let j=0;j<3;j++){
+						record.coords.push([i,3*u + j + h_gap,0])
+					}
+				}
+			}
+			for(let i=0;i<Math.floor(width - 11 - w_gap);i++){
+				for(let j=0;j<Math.floor(9 + h_gap);j++){
+					record.coords.push([11 + w_gap + i,j,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width);i++){
+				for(let j=0;j<Math.floor(height - 9 - h_gap);j++){
+					record.coords.push([i,j + 9 + h_gap,0])
+				}
+			}
+		}
+	}
 	if(width > 5 && height > 4 && (width + height - Math.floor(width) - Math.floor(height) >= 3*s1 - 3)){//21
 		if(record.coords.length < Math.floor(width)*Math.floor(height) + 1){
 			let h_gap = height - Math.floor(height);
@@ -1563,6 +1619,87 @@ function getSquares(width,height,recursive){
 		let biggie = graham(width,height);
 		if(biggie.length > record.coords.length){
 			record.coords = biggie
+		}
+	}
+	//slanted göbel strip x2
+	//TODO: swap order
+	if(width > 4 && height > 3){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let h_unit = Math.floor(height);
+		if(width < h_unit+1){
+			h_unit--;
+		}
+		if(h_gap*h_gap + (w_gap+1)*(w_gap+1) >= 4){
+			let ang = Math.atan(h_gap/(w_gap+1));
+			let diag = Math.hypot(h_unit + w_gap - 2,h_unit - 2 + h_gap);
+			let ang2 = Math.acos((h_unit - 2)/diag);
+			let diff_ang = ang2 - ang;
+			let diffComp = Math.cos(diff_ang);
+			let real_diag = diag*diffComp;
+			let count = (h_unit - 1)*(h_unit - 1) + (h_unit - 1) + 4 + Math.floor(real_diag)*2 + Math.floor(width) * Math.floor(height - h_unit) + h_unit * Math.floor(width - h_unit - 1,w_gap);
+			if(count > record.coords.length){
+				record.coords = [
+					[0,0,0],
+					[1,0,0],
+
+					[h_unit + w_gap,h_unit + h_gap - 1,0],
+					[h_unit + w_gap - 1,h_unit + h_gap - 1,0],
+					//[1,0,0],
+				]
+				for(let i=0;i<Math.floor(width - h_unit - 1 - w_gap);i++){
+					for(let j=0;j<h_unit;j++){
+						record.coords.push([h_unit + w_gap + 1 + i,j,0])
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - h_unit - h_gap);j++){
+						record.coords.push([i,h_unit + h_gap,0])
+					}
+				}
+				for(let i=0;i<h_unit - 1;i++){
+					for(let j=0;i+j<h_unit - 1;j++){
+						record.coords.push([j,h_unit + h_gap - i - 1,0]);
+						record.coords.push([h_unit + w_gap - j,i,0])
+					}
+				}
+				let c = Math.cos(ang);
+				let s = Math.sin(ang);
+				let alf = w_gap/(s/c + c/s);
+				let x1 = 2 + alf*c/s - 2*c;
+				let y1 = 1 - alf + s*2;
+				let cx = x1 + s;
+				let cy = y1 + c;
+				record.coords.push([x1,y1,-ang*180/Math.PI]);
+				record.coords.push([x1+c,y1-s,-ang*180/Math.PI]);
+				for(let i = 1;i<Math.floor(real_diag);i++){
+					let diff = 1 - ((cy - 1 - h_gap) % 1);
+					if(diff < c){
+						let future = cx + diff*s/c;
+						let hylle = Math.floor(cy - 1 - h_gap) + 2;
+						let bon1 = (hylle - future);
+						let diff2 = (c - diff)*(s/c + c/s);
+						if(diff2 < bon1){
+							record.coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+							record.coords.push([cx+diff2*c*c+c,cy-diff2*c*s-s,-ang*180/Math.PI]);
+							cx += bon1*c*c;
+							cy -= bon1*c*s;
+						}
+						else{
+							cx += bon1*c*c;
+							cy -= bon1*c*s;
+							record.coords.push([cx,cy,-ang*180/Math.PI]);
+							record.coords.push([cx+c,cy-s,-ang*180/Math.PI]);
+						}
+					}
+					else{
+						record.coords.push([cx,cy,-ang*180/Math.PI]);
+						record.coords.push([cx + c,cy - s,-ang*180/Math.PI]);
+					}
+					cx += s;
+					cy += c;
+				}
+			}
 		}
 	}
 	return record

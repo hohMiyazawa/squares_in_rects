@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<div id="target">
+<script>
+let target = document.getElementById("target");
+const svgNS = "http://www.w3.org/2000/svg";
+let illustration = document.createElementNS(svgNS,"svg");
+target.appendChild(illustration);
+
+function removeChildren(node){
+	if(node){
+		while(node.childElementCount){
+			node.lastChild.remove()
+		}
+	}
+}
+
+let width  = 7.8477124241789085;
+let height = 4.8501530120773975;
+
+let angle = 29.284560458490535;
+let cos = Math.cos(angle*Math.PI/180);
+let sin = Math.sin(angle*Math.PI/180);
+
+let angle2 = 27.5;
+let r1 = Math.cos(angle*Math.PI/180 - angle2*Math.PI/180);
+let r2 = 1.163;
+let x1 = 1.3345;
+let y1 = 3.503;
+
+//[x, y, angle]
+let square_list = [
+	[width - 1, height - 1, 0],
+	[width - 1, height - 2, 0],
+	[width - 1, height - 3, 0],
+	[width - 2, height - 1, 0],
+
+	[0, 0, 0],
+	[0, 1, 0],
+
+	[0, height - 1, 0],
+	[0, height - 2, 0],
+	[1, height - 1, 0],
+
+	[2,                height - sin,         angle - 90],
+	[2 + sin,          height - sin - cos,   angle - 90],
+	[2 + sin*2,        height - sin - cos*2, angle - 90],
+	[2 + sin*3,        height - sin - cos*3, angle - 90],
+	[2 + sin*4,        height - sin - cos*4, angle - 90],
+
+	[2 + 1/cos,        height - sin,         angle - 90],
+	[2 + sin + 1/cos,  height - sin - cos,   angle - 90],
+	[2 + sin*2 + 1/cos,height - sin - cos*2, angle - 90],
+	[2 + sin*3 + 1/cos,height - sin - cos*3, angle - 90],
+	[2 + sin*4 + 1/cos,height - sin - cos*4, angle - 90],
+
+	[2 + 2/cos,        height - sin,         angle - 90],
+	[2 + sin + 2/cos,  height - sin - cos,   angle - 90],
+	[2 + sin*2 + 2/cos,height - sin - cos*2, angle - 90],
+	[2 + sin*3 + 2/cos,height - sin - cos*3, angle - 90],
+	[2 + sin*4 + 2/cos,height - sin - cos*4, angle - 90],
+
+	[x1, y1, angle2 - 90,"blue"],
+	[x1 + sin*r1, y1 - cos*r1, angle2 - 90,"blue"],
+	[x1 + sin*2*r1, y1 - cos*2*r1, angle2 - 90,"blue"],
+	[x1 + sin*3*r1, y1 - cos*3*r1, angle2 - 90,"blue"],
+
+	[x1 + sin*2*r1 - r2, y1 - cos*2*r1, angle2 - 90,"blue"],
+	[x1 + sin*3*r1 - r2, y1 - cos*3*r1, angle2 - 90,"blue"],
+
+	[0.62, 2.6095, -57.97, "grey"],
+]
+
+function plotSquares(illustration,list,width,height){
+	removeChildren(illustration);
+	let scale = 400;
+	illustration.style.width = width*scale + "px";
+	illustration.style.height = height*scale + "px";
+	illustration.setAttributeNS(null,"viewBox","0,0 " + width * scale + " " + height * scale);
+
+	let cont = document.createElementNS(svgNS,"rect");
+	cont.setAttributeNS(null,"stroke","blue");
+	cont.setAttributeNS(null,"stroke-width","1");
+	cont.setAttributeNS(null,"fill","none");
+	cont.setAttributeNS(null,"x",0);
+	cont.setAttributeNS(null,"y",0);
+	cont.setAttributeNS(null,"width",width*scale);
+	cont.setAttributeNS(null,"height",height*scale);
+	illustration.appendChild(cont);
+	list.forEach(s => {
+		let square = document.createElementNS(svgNS,"rect");
+		square.setAttributeNS(null,"stroke","black");
+		square.setAttributeNS(null,"stroke-width","0.2");
+		square.setAttributeNS(null,"fill","green");
+		square.setAttributeNS(null,"x",s[0]*scale);
+		square.setAttributeNS(null,"y",s[1]*scale);
+		square.setAttributeNS(null,"width",scale);
+		square.setAttributeNS(null,"height",scale);
+		if(!s[2]){
+			s[2] = 0
+		}
+		if(s[2] !== 0){
+			if(s[3]){
+				square.setAttributeNS(null,"fill",s[3]);
+			}
+			else{
+				square.setAttributeNS(null,"fill","red");
+			}
+			square.setAttributeNS(null,"transform","rotate(" + (s[2]) +"," + s[0]*scale + "," + s[1]*scale +  ")");
+		}
+		illustration.appendChild(square)
+	})
+}
+
+plotSquares(illustration, square_list, width, height)
+</script>
+</body>
+</html>

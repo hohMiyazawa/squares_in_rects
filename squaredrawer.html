@@ -7,6 +7,7 @@
 Width:<input id="width" type="number" min="0" step="0.02" value="3.9" max="50">
 Height:<input id="height" type="number" min="0" step="0.02" value="3.9" max="50">
 Square:<input id="square" type="checkbox">
+<button onclick="apply()">Apply</button>
 <p>Or drag the lower right corner around</p>
 <button onclick="rand()">Random</button>
 <div id="svgContainer" style="resize:both;overflow:auto;"></div>
@@ -1597,8 +1598,12 @@ function plotSquares(info,width,height){
 	efficiency.innerText = "n = " + info.coords.length + ", density: " + (100 * info.coords.length/(width*height)).toPrecision(4) + "%";
 	comment.innerText = info.comment;
 }
+let handled = false;
 let rfunk = function(){
-	//console.log("ro");
+	if(handled){
+		handled = false;
+		return
+	}
 	let rect = svgContainer.getClientRects();
 	let newWidth = ((rect[0].width - dimensions.margin*2)/dimensions.scale);
 	let newHeight = ((rect[0].height - dimensions.margin*2)/dimensions.scale);
@@ -1612,7 +1617,6 @@ let rfunk = function(){
 let obe = new ResizeObserver(rfunk);
 obe.observe(svgContainer);	
 function updateDimensions(){
-	//console.log("ud");
 	width = parseFloat(widthInput.value) || 1;
 	if(squareInput.checked){
 		height = parseFloat(widthInput.value) || 1;
@@ -1628,15 +1632,15 @@ function updateDimensions(){
 	if(width > 200){
 		return
 	}
-	obe.unobserve(svgContainer);
+	handled = true;
 	plotSquares(getSquares(Math.max(width,height),Math.min(width,height)),width,height);
-	obe.observe(svgContainer);
+}
+function apply(){
+	updateDimensions();
 }
 svgContainer.style.width = (widthInput.value || 1)*dimensions.scale + dimensions.margin*2 + "px";
 svgContainer.style.height = (heightInput.value || 1)*dimensions.scale + dimensions.margin*2 + "px";
 illustration.setAttributeNS(null,"viewBox",-dimensions.margin + " " + (-dimensions.margin) + " " + ((widthInput.value || 1)*dimensions.scale + dimensions.margin*2) + " " + ((heightInput.value || 1)*dimensions.scale + dimensions.margin*2));
-widthInput.oninput = updateDimensions;
-heightInput.oninput = updateDimensions;
 squareInput.oninput = updateDimensions;
 updateDimensions();
 

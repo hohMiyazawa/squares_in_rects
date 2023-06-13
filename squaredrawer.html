@@ -722,39 +722,52 @@ function gen_slant5(width,height){
 			};
 			hats.push(gully)
 		})
-		if(hoh_det >= 1){
+			hats.push({
+			size: 2 + s/c + 1/c - 5*s + c,
+			squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
+				[-(2 + s/c + 1/c - 5*s + c),height - 1,0],
+				[-(2 + s/c + 1/c - 5*s + c),0,0],
+				[-(2 + s/c + 1/c - 5*s + c),1,0],
+				[1-(2 + s/c + 1/c - 5*s + c),0,0],
+				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang]]
+		});
+		let addition = 0;
+		if(hoh_det < 1){
+			addition = c*(1 - hoh_det)/s;
+		}
+		if(true/*hoh_det >= 1*/){
 			let lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
-				[-c-1,height-1,0],
+				[-c-1,height-1-addition,0],
 				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang]
 			];
 			let cornerblock = {
-				size: 1 + c,
+				size: 1 + c + addition,
 				squares: lava.map(a => a)
 			};
-			top = 4*s - c + (1 - (s/c))*s + 1;
+			top = 4*s - c + (1 - (s/c))*s + 1 + addition;
 			let rounds = [];
 			for(let u=0;u<3;u++){
 				top -= s/c;
 				rounds.push(Math.ceil(top) - top);
 				for(let i=0;i<Math.max(Math.floor(top),0);i++){
-					cornerblock.squares.push([i-c-1,u,0])
+					cornerblock.squares.push([i-c-1-addition,u,0])
 				}
 			
 			};
 			hats.push(cornerblock);
 			rounds.forEach((round,ind) => {
-				let gully = {size: 1 + c + round,squares: lava.map(a => a)};
-				top = 4*s - c + (1 - (s/c))*s + 1 + round;
+				let gully = {size: 1 + c + round + addition,squares: lava.map(a => a)};
+				top = 4*s - c + (1 - (s/c))*s + 1 + round  + addition;
 				for(let u=0;u<3;u++){
 					top -= s/c;
 					if(u === ind){
 						for(let i=0;i<Math.max(Math.round(top),0);i++){
-							gully.squares.push([i-c-1-round,u,0])
+							gully.squares.push([i-c-1-round-addition,u,0])
 						}
 					}
 					else{
 						for(let i=0;i<Math.max(Math.floor(top),0);i++){
-							gully.squares.push([i-c-1-round,u,0])
+							gully.squares.push([i-c-1-round-addition,u,0])
 						}
 					}
 				
@@ -763,37 +776,37 @@ function gen_slant5(width,height){
 			})
 
 			lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
-				[-c-1,height-1,0],[-c-2,height-1,0],[-c-2,height-2,0],
+				[-c-1 - addition,height-1,0],[-c-2 - addition,height-1,0],[-c-2 - addition,height-2,0],
 				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang]
 			];
 			let cornerstair = {
-				size: 2 + c,
+				size: 2 + c  + addition,
 				squares: lava.map(a => a)
 			};
-			top = 4*s - c + (1 - (s/c))*s + 2;
+			top = 4*s - c + (1 - (s/c))*s + 2  + addition;
 			rounds = [];
 			for(let u=0;u<2;u++){
 				top -= s/c;
 				rounds.push(Math.ceil(top) - top);
 				for(let i=0;i<Math.max(Math.floor(top),0);i++){
-					cornerstair.squares.push([i-c-2,u,0])
+					cornerstair.squares.push([i-c-2-addition,u,0])
 				}
 			
 			};
 			hats.push(cornerstair);
 			rounds.forEach((round,ind) => {
-				let gully = {size: 2 + c + round,squares: lava.map(a => a)};
-				top = 4*s - c + (1 - (s/c))*s + 2 + round;
+				let gully = {size: 2 + c + round+ addition,squares: lava.map(a => a)};
+				top = 4*s - c + (1 - (s/c))*s + 2 + round + addition;
 				for(let u=0;u<2;u++){
 					top -= s/c;
 					if(u === ind){
 						for(let i=0;i<Math.max(Math.round(top),0);i++){
-							gully.squares.push([i-c-2-round,u,0])
+							gully.squares.push([i-c-2-round- addition,u,0])
 						}
 					}
 					else{
 						for(let i=0;i<Math.max(Math.floor(top),0);i++){
-							gully.squares.push([i-c-2-round,u,0])
+							gully.squares.push([i-c-2-round-addition,u,0])
 						}
 					}
 				
@@ -802,51 +815,70 @@ function gen_slant5(width,height){
 			})
 
 			lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
-				[-c-1,height-1,0],[-c-2,height-1,0],[-c-2,height-2,0],
+				[-c-1-addition,height-1,0],[-c-2-addition,height-1,0],[-c-2-addition,height-2,0],
 				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang],
 				[-c+s*2-2/c,height-s-c*2,-ang],[-c+s*3-2/c,height-s-c*3,-ang],[-c+s*4-2/c,height-s-c*4,-ang]
 			];
 			let cornerstair2 = {
-				size: 2 + c,
+				size: 2 + c + addition,
 				squares: lava.map(a => a)
 			};
-			top = 4*s - c + (1 - (s/c))*s + 2 - 1/c;
+			top = 4*s - c + (1 - (s/c))*s + 2 - 1/c + addition;
 			rounds = [];
 			for(let u=0;u<2;u++){
 				top -= s/c;
 				rounds.push(Math.ceil(top) - top);
 				for(let i=0;i<Math.max(Math.floor(top),0);i++){
-					cornerstair2.squares.push([i-c-2,u,0])
+					cornerstair2.squares.push([i-c-2-addition,u,0])
 				}
 			
 			};
 			hats.push(cornerstair2);
 			rounds.forEach((round,ind) => {
 				let gully = {size: 2 + c + round,squares: lava.map(a => a)};
-				top = 4*s - c + (1 - (s/c))*s + 2 - 1/c + round;
+				top = 4*s - c + (1 - (s/c))*s + 2 - 1/c + round + addition;
 				for(let u=0;u<2;u++){
 					top -= s/c;
 					if(u === ind){
 						for(let i=0;i<Math.max(Math.round(top),0);i++){
-							gully.squares.push([i-c-2-round,u,0])
+							gully.squares.push([i-c-2-round-addition,u,0])
 						}
 					}
 					else{
 						for(let i=0;i<Math.max(Math.floor(top),0);i++){
-							gully.squares.push([i-c-2-round,u,0])
+							gully.squares.push([i-c-2-round-addition,u,0])
 						}
 					}
 				
 				};
 				hats.push(gully)
 			})
+			let cornerstair3 = {
+				size: 3 + c + addition,
+				squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
+				[-c-1-addition,height-1,0],
+				[-c-2-addition,height-1,0],[-c-2-addition,height-2,0],
+				[-c-3-addition,height-1,0],[-c-3-addition,height-2,0],[-c-3-addition,height-3,0],
+				[-c-3-addition,0,0],
+				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang],
+				[-c+s*2-2/c,height-s-c*2,-ang],[-c+s*3-2/c,height-s-c*3,-ang],[-c+s*4-2/c,height-s-c*4,-ang],
+				[-c+s*3-3/c,height-s-c*3,-ang],[-c+s*4-3/c,height-s-c*4,-ang]]
+			};
+			hats.push(cornerstair3);
 		}
-
-		//console.log(hats);
+		hats.sort((a,b) => a.size - b.size);
+		let best = 0;
+		hats = hats.filter(a => {
+			if(a.squares.length <= best){
+				return false
+			}
+			best = a.squares.length;
+			return true
+		})
 
 		let best_i = 0;
 		let best_j = 0;
-		let best = 0;
+		best = 0;
 
 		for(let i=0;i<hats.length;i++){
 			for(let j=i;j<hats.length;j++){
@@ -1883,8 +1915,8 @@ function getSquares(width,height,recursive){
 				}
 			}
 			for(let i = 0;i<Math.floor(s1 * (height - 2));i++){
-				record.coords.push([1/2 - w_gap/2 + s2*i,height - 1 - (1 + w_gap)/2 - i*s2,-45]);
-				record.coords.push([1/2 - w_gap/2 + s2*i + s2,height - 1 - (1 + w_gap)/2 + s2 - i*s2,-45]);
+				record.coords.push([1 + w_gap/2 - s1 + s2*i,height - 1 + w_gap/2 - s1 - i*s2,-45]);
+				record.coords.push([1 + w_gap/2 - s1 + s2*i + s2,height - 1 + w_gap/2 - s2 - i*s2,-45]);
 			}
 			if(record.coords.length !== count){
 				throw "up"
@@ -2043,7 +2075,7 @@ function plotSquares(info,width,height){
 	svgContainer.style.width = width*dimensions.scale + dimensions.margin*2 + "px";
 	svgContainer.style.height = height*dimensions.scale + dimensions.margin*2 + "px";
 	let cont = document.createElementNS(svgNS,"rect");
-	cont.setAttributeNS(null,"stroke","blue");
+	cont.setAttributeNS(null,"stroke","black");
 	cont.setAttributeNS(null,"fill","none");
 	cont.setAttributeNS(null,"x",0);
 	cont.setAttributeNS(null,"y",0);
@@ -2066,21 +2098,20 @@ function plotSquares(info,width,height){
 			s[2] = 0
 		}
 		if(s[2] !== 0){
+			square.setAttributeNS(null,"transform","rotate(" + s[2] + "," + s[0]*scale + "," + s[1]*scale +  ")");
 			if(s[2] % 90 === 0){
 				square.setAttributeNS(null,"fill","green");
-				square.setAttributeNS(null,"transform","rotate(" + s[2] + "," + s[0]*scale + "," + s[1]*scale +  ")");
 			}
 			else if(s[2] === -45 || s[2] === -135 || s[2] === 45 || s[2] === 135 || s[2] === 225){
 				square.setAttributeNS(null,"fill","blue");
-				square.setAttributeNS(null,"transform","rotate(" + s[2] + "," + s[0]*scale + "," + s[1]*scale +  ")");
 			}
 			else{
 				square.setAttributeNS(null,"fill","red");
 				//square.setAttributeNS(null,"fill","black");
-				square.setAttributeNS(null,"transform","rotate(" + (s[2]) +"," + s[0]*scale + "," + s[1]*scale +  ")");
 			}
 		}
 		//square.setAttributeNS(null,"fill","#ffcc99");
+		//square.setAttributeNS(null,"fill","#ccffff");
 		illustration.appendChild(square)
 	})
 	efficiency.innerText = "n = " + info.coords.length + ", density: " + (100 * info.coords.length/(width*height)).toPrecision(4) + "%";
@@ -2205,14 +2236,14 @@ function triangleFill3(a,b){
 function teff(){
 	let canvas = document.getElementById("triangle");
 	canvas.width = 1500;
-	canvas.height = 1500;
+	canvas.height = 500;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	for(let i=0;i<canvas.width;i++){
-		for(let j=i;j<canvas.height ;j++){
-			let res = getSquares(i*0.01,j*0.01).coords.length;
-			let sob = Math.floor(i*0.01)*Math.floor(j*0.01);
+		for(let j=0;j<canvas.height ;j++){
+			let res = getSquares(i*0.02,4+j/500).coords.length;
+			let sob = Math.floor(i*0.02)*Math.floor(4+j/500);
 			if(res > sob){
 				if(res - sob === 1){
 					ctx.fillStyle = "red";
@@ -2236,7 +2267,7 @@ function teff(){
 					ctx.fillStyle = "black";
 				}
 				ctx.fillRect(i,j,1,1);
-				ctx.fillRect(j,i,1,1);
+				//ctx.fillRect(j,i,1,1);
 			}
 /*
 			let res = triangleFill3(i*0.01,j*0.01);

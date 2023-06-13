@@ -1,0 +1,227 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<div id="target">
+<script>
+let target = document.getElementById("target");
+const svgNS = "http://www.w3.org/2000/svg";
+let illustration = document.createElementNS(svgNS,"svg");
+target.appendChild(illustration);
+
+function removeChildren(node){
+	if(node){
+		while(node.childElementCount){
+			node.lastChild.remove()
+		}
+	}
+}
+
+function solve_cos(a,n){
+	return (a*n - Math.sqrt(-a*a + n*n +1))/(n*n + 1)
+}
+
+const phi = (Math.sqrt(5)+1)/2;
+
+let cos = 0.911931512282405-0.0100496993;
+cos = 0.89595-0.0018*0 + 0.000174 + 0.000000027
+let angle = Math.acos(cos)*180/Math.PI;
+let sin = Math.sqrt(1-cos*cos);
+
+let height = 5*cos + sin;
+let width = height*2;
+let calc_width = 2 + cos + 4/cos + 3*sin/cos + 1;
+
+
+calc_width = 1 + 2*sin/cos + 6/cos + cos - sin*5 + 3*sin/cos + 1
+
+//1 + cos + 5/cos + 3*sin/cos + 1 = 10*cos + 2 * sin
+//cos + 5/cos + 3*sin/cos + 2 = 10*cos + 2 * sin
+//5/cos + 3*sin/cos + 2 = 9*cos + 2 * sin
+//5/cos(u) + 3*sin(u)/cos(u) + 2 = 9*cos(u) + 2 * sin(u)
+console.log(height,width,calc_width, calc_width > width);
+
+
+//2 + cos + 4/cos + 3*sin/cos + 1 = 10*cos + 2 * sin
+//cos + 4/cos + 3*sin/cos + 3 = 10*cos + 2 * sin
+//4/cos + 3*sin/cos + 3 = 9*cos + 2 * sin
+//	
+
+//[x, y, angle]
+let square_list = [
+	[0,0,0],
+	[0,1,0],
+	[0, height - 1, 0],
+	[1, height - 1, 0],
+	[0, height - 2, 0],
+	[width - 1, height - 1, 0],
+	[width - 1, height - 2, 0],
+	[width - 1, height - 3, 0],
+
+	//[1, height - sin,angle-90],
+
+	[1-sin*0 + 2*sin/cos, 0, angle],
+	[1-sin*1 + 2*sin/cos, cos, angle],
+	[1-sin*2 + 2*sin/cos, cos*2, angle],
+
+	[1+ 1/cos-sin*0 + 2*sin/cos, 0, angle],
+	[1+ 1/cos-sin*1 + 2*sin/cos, cos, angle],
+	[1+ 1/cos-sin*2 + 2*sin/cos, cos*2, angle],
+	[1+ 1/cos-sin*3 + 2*sin/cos, cos*3, angle],
+
+	[1+ 2/cos-sin*0 + 2*sin/cos, 0, angle],
+	[1+ 2/cos-sin*1 + 2*sin/cos, cos, angle],
+	[1+ 2/cos-sin*2 + 2*sin/cos, cos*2, angle],
+	[1+ 2/cos-sin*3 + 2*sin/cos, cos*3, angle],
+	[1+ 2/cos-sin*4 + 2*sin/cos, cos*4, angle],
+
+	[1+ 3/cos-sin*0 + 2*sin/cos, 0, angle],
+	[1+ 3/cos-sin*1 + 2*sin/cos, cos, angle],
+	[1+ 3/cos-sin*2 + 2*sin/cos, cos*2, angle],
+	[1+ 3/cos-sin*3 + 2*sin/cos, cos*3, angle],
+	[1+ 3/cos-sin*4 + 2*sin/cos, cos*4, angle],
+
+	[1+ 4/cos-sin*0 + 2*sin/cos, 0, angle],
+	[1+ 4/cos-sin*1 + 2*sin/cos, cos, angle],
+	[1+ 4/cos-sin*2 + 2*sin/cos, cos*2, angle],
+	[1+ 4/cos-sin*3 + 2*sin/cos, cos*3, angle],
+	[1+ 4/cos-sin*4 + 2*sin/cos, cos*4, angle],
+
+	[1+ 5/cos-sin*0 + 2*sin/cos, 0, angle],
+	[1+ 5/cos-sin*1 + 2*sin/cos, cos, angle],
+	[1+ 5/cos-sin*2 + 2*sin/cos, cos*2, angle],
+	[1+ 5/cos-sin*3 + 2*sin/cos, cos*3, angle],
+	[1+ 5/cos-sin*4 + 2*sin/cos, cos*4, angle],
+
+	[1+ 6/cos-sin*0 + 2*sin/cos, 0, angle],
+	[1+ 6/cos-sin*1 + 2*sin/cos, cos, angle],
+	[1+ 6/cos-sin*2 + 2*sin/cos, cos*2, angle],
+	[1+ 6/cos-sin*3 + 2*sin/cos, cos*3, angle],
+	[1+ 6/cos-sin*4 + 2*sin/cos, cos*4, angle],
+/*
+	[2- 1/cos+sin, height - sin-cos,angle-90],
+	[2- 1/cos+sin*2, height - sin-cos*2,angle-90],
+	[2- 1/cos+sin*3, height - sin-cos*3,angle-90],
+	[2- 1/cos+sin*4, height - sin-cos*4,angle-90],
+
+	[2, height - sin,angle-90],
+	[2 + sin, height - sin-cos,angle-90],
+	[2 + sin*2, height - sin-cos*2,angle-90],
+	[2 + sin*3, height - sin-cos*3,angle-90],
+	[2 + sin*4, height - sin-cos*4,angle-90],
+
+	[2+ 1/cos, height - sin,angle-90],
+	[2+ 1/cos+sin, height - sin-cos,angle-90],
+	[2+ 1/cos+sin*2, height - sin-cos*2,angle-90],
+	[2+ 1/cos+sin*3, height - sin-cos*3,angle-90],
+	[2+ 1/cos+sin*4, height - sin-cos*4,angle-90],
+
+	[2+ 2/cos, height - sin,angle-90],
+	[2+ 2/cos+sin, height - sin-cos,angle-90],
+	[2+ 2/cos+sin*2, height - sin-cos*2,angle-90],
+	[2+ 2/cos+sin*3, height - sin-cos*3,angle-90],
+	[2+ 2/cos+sin*4, height - sin-cos*4,angle-90],
+
+	[2+ 3/cos, height - sin,angle-90],
+	[2+ 3/cos+sin, height - sin-cos,angle-90],
+	[2+ 3/cos+sin*2, height - sin-cos*2,angle-90],
+	[2+ 3/cos+sin*3, height - sin-cos*3,angle-90],
+	[2+ 3/cos+sin*4, height - sin-cos*4,angle-90],
+
+	[2+ 4/cos, height - sin,angle-90],
+	[2+ 4/cos+sin, height - sin-cos,angle-90],
+	[2+ 4/cos+sin*2, height - sin-cos*2,angle-90],
+	[2+ 4/cos+sin*3, height - sin-cos*3,angle-90],
+	[2+ 4/cos+sin*4, height - sin-cos*4,angle-90],
+*/
+
+
+//
+
+	//[1+sin- 1/cos, height - sin-cos,angle-90],
+/*
+	[2- 2/cos+sin*2, height - sin-cos*2,angle-90],
+	[2- 2/cos+sin*3, height - sin-cos*3,angle-90],
+	[2- 2/cos+sin*4, height - sin-cos*4,angle-90],
+*/
+
+
+]
+
+function plotSquares(illustration,list,width,height){
+	removeChildren(illustration);
+	let scale = 400;
+	illustration.style.width = width*scale + "px";
+	illustration.style.height = height*scale + "px";
+	illustration.setAttributeNS(null,"viewBox","0,0 " + width * scale + " " + height * scale);
+
+	let cont = document.createElementNS(svgNS,"rect");
+	cont.setAttributeNS(null,"stroke","blue");
+	cont.setAttributeNS(null,"stroke-width","1");
+	cont.setAttributeNS(null,"fill","none");
+	cont.setAttributeNS(null,"x",0);
+	cont.setAttributeNS(null,"y",0);
+	cont.setAttributeNS(null,"width",width*scale);
+	cont.setAttributeNS(null,"height",height*scale);
+	illustration.appendChild(cont);
+	list.forEach(s => {
+		let square = document.createElementNS(svgNS,"rect");
+		square.setAttributeNS(null,"stroke","black");
+		square.setAttributeNS(null,"stroke-width","10");
+		square.setAttributeNS(null,"fill","black");
+		square.setAttributeNS(null,"fill","#ccffff");
+		square.setAttributeNS(null,"x",s[0]*scale);
+		square.setAttributeNS(null,"y",s[1]*scale);
+		square.setAttributeNS(null,"width",scale);
+		square.setAttributeNS(null,"height",scale);
+		if(!s[2]){
+			s[2] = 0
+		}
+		if(s[3]){
+			//square.setAttributeNS(null,"fill",s[3]);
+		}
+		if(s[2] !== 0){
+			if(s[3]){
+				//square.setAttributeNS(null,"fill",s[3]);
+			}
+			else{
+				//square.setAttributeNS(null,"fill","black");
+			}
+			square.setAttributeNS(null,"transform","rotate(" + (s[2]) +"," + s[0]*scale + "," + s[1]*scale +  ")");
+		}
+		illustration.appendChild(square)
+	})
+}
+
+plotSquares(illustration, square_list, width, height)
+
+let perturbate = function(cos){
+	let sin = Math.sqrt(1 - cos*cos);
+	let height = 5*cos + sin;
+	console.log(height +0);
+	let width = 1 + 3*sin/cos + 2/cos + cos + 2;
+	let ideal_width = height*phi;
+	let gap = ideal_width - width;
+	//console.log("clc_width",width);
+	//console.log("phi_width",ideal_width);
+	console.log("gap",gap,width);
+	let h = (height - sin - 4*cos - sin)/(cos*cos) + sin;
+	console.log(h)
+	if(h < 1){
+		let diff = cos/sin * (1-h);
+		if(diff > gap){
+			height += (diff - gap)/phi;
+		}
+	}
+	//console.log(width/phi);
+	//console.log(height);
+	return Math.max(width/phi,height);
+}
+
+//perturbate(cos+0.000810008)
+
+</script>
+</body>
+</html>

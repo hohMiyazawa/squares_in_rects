@@ -38,6 +38,12 @@ function generateLattice(x,y,width,height){
 	return coords;
 }
 
+function solve_cos(a,n){
+	return (a*n - Math.sqrt(-a*a + n*n +1))/(n*n + 1)
+}
+
+const phi = (Math.sqrt(5)+1)/2;
+
 const s1 = Math.SQRT2;
 const s2 = Math.SQRT2/2;
 let c = Math.cos(Math.PI*49.818/180);
@@ -134,7 +140,7 @@ let squareList = [
 		[2.96310182129397913960505888778287,1.40632266961506711340555903815146,39.8049589774499973462400047793339],
 
 		[0.64017619242926608758416854327031,2,39.8049589774499973462400047793339],
-		[1.382,2.678,39.8049589774499973462400047793339],
+		[1.3720175307976368,2.6838412775762401,39.8049589774499973462400047793339],
 
 		[2.54550971432895279624386048106669,3.26948797698562051517148994054930,-36.6237863834465893201859433547440],
 	]},
@@ -612,9 +618,276 @@ function gen_slant3(width,height){
 	return []
 }
 
+function gen_slant5(width,height){
+	let base_len = 5;
+	let angle = Math.asin(height/Math.sqrt(26)) - Math.asin(1/Math.sqrt(26));
+	let ang = 180*((angle)/Math.PI)
+	let c = Math.cos(Math.PI/2 - angle);
+	let s = Math.sin(Math.PI/2 - angle);
+	let end_cap = c + 5 * s;
+	//console.log("c",c,"s",s);
+	if(end_cap < width){
+		let units = Math.floor((width - end_cap) * c);
+		let coords = [];
+		let base = height - s;
+		let counter = 0;
+		let mini = [];
+		while(base > 0){
+			base -= c/s;
+			for(let i=0;i<Math.max(0,Math.floor(base));i++){
+				mini.push([counter,i,0])
+			}
+			counter++
+		}
+		let mini2 = [];
+		base = 5;
+		counter = 0;
+		while(base > 0){
+			base -= c/s + s/c;
+			counter++;
+			for(let i=0;i<Math.max(0,Math.floor(base));i++){
+				mini2.push([(5-1)*s - i*s - counter/c,i*c + c,-ang])
+			}
+		}
+		if(mini2.length > mini.length){
+			coords = coords.concat(mini2);
+		}
+		else{
+			coords = coords.concat(mini);
+		}
+		let slag = width - end_cap - units/c;
+		base = height - s + c/s * slag;
+		counter = 0;
+		while(base > 0){
+			base -= c/s;
+			counter++
+			for(let i=0;i<Math.max(0,Math.floor(base));i++){
+				coords.push([width - counter,height - i - 1,0])
+			}
+		}
+		for(let i=0;i<=units;i++){
+			for(let j=0;j<5;j++){
+				if(i === 0 && j === 0){
+					coords.push([0,height - 1,0])
+				}
+				else{
+					coords.push([i/c + j*s,height - s - j*c,-ang])
+				}
+			}
+		}
+		if(height - 1 > 1){
+			let lesser = gen_slant(width,height - 1);
+			if(lesser.length + Math.floor(width) > coords.length){
+				coords = lesser;
+				for(let i=0;i<Math.floor(width);i++){
+					coords.push([i,height - 1,0])
+				}
+			}
+		}
+		let hoh_det = s + (1 - s/c)/c;
+		let middle = s*5 + s*s/c;
+		let hats = [];
+		let gava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang]];
+		let nocap = {
+			size: c,
+			squares: gava.map(a => a)
+		};
+		let top = 5*s;
+		let count = 0;
+		let rounds = [];
+		for(let u=0;u<4;u++){
+			top -= s/c;
+			rounds.push(Math.ceil(top) - top);
+			for(let i=0;i<Math.max(Math.floor(top),0);i++){
+				nocap.squares.push([i-c,u,0])
+			}
+		}
+		hats.push(nocap);
+		rounds.forEach((round,ind) => {
+			let gully = {size: c + round,squares: gava.map(a => a)};
+			top = 5*s + round;
+			for(let u=0;u<3;u++){
+				top -= s/c;
+				if(u === ind){
+					for(let i=0;i<Math.max(Math.round(top),0);i++){
+						gully.squares.push([i-c-round,u,0])
+					}
+				}
+				else{
+					for(let i=0;i<Math.max(Math.floor(top),0);i++){
+						gully.squares.push([i-c-round,u,0])
+					}
+				}
+			
+			};
+			hats.push(gully)
+		})
+		if(hoh_det >= 1){
+			let lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
+				[-c-1,height-1,0],
+				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang]
+			];
+			let cornerblock = {
+				size: 1 + c,
+				squares: lava.map(a => a)
+			};
+			top = 4*s - c + (1 - (s/c))*s + 1;
+			let rounds = [];
+			for(let u=0;u<3;u++){
+				top -= s/c;
+				rounds.push(Math.ceil(top) - top);
+				for(let i=0;i<Math.max(Math.floor(top),0);i++){
+					cornerblock.squares.push([i-c-1,u,0])
+				}
+			
+			};
+			hats.push(cornerblock);
+			rounds.forEach((round,ind) => {
+				let gully = {size: 1 + c + round,squares: lava.map(a => a)};
+				top = 4*s - c + (1 - (s/c))*s + 1 + round;
+				for(let u=0;u<3;u++){
+					top -= s/c;
+					if(u === ind){
+						for(let i=0;i<Math.max(Math.round(top),0);i++){
+							gully.squares.push([i-c-1-round,u,0])
+						}
+					}
+					else{
+						for(let i=0;i<Math.max(Math.floor(top),0);i++){
+							gully.squares.push([i-c-1-round,u,0])
+						}
+					}
+				
+				};
+				hats.push(gully)
+			})
+
+			lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
+				[-c-1,height-1,0],[-c-2,height-1,0],[-c-2,height-2,0],
+				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang]
+			];
+			let cornerstair = {
+				size: 2 + c,
+				squares: lava.map(a => a)
+			};
+			top = 4*s - c + (1 - (s/c))*s + 2;
+			rounds = [];
+			for(let u=0;u<2;u++){
+				top -= s/c;
+				rounds.push(Math.ceil(top) - top);
+				for(let i=0;i<Math.max(Math.floor(top),0);i++){
+					cornerstair.squares.push([i-c-2,u,0])
+				}
+			
+			};
+			hats.push(cornerstair);
+			rounds.forEach((round,ind) => {
+				let gully = {size: 2 + c + round,squares: lava.map(a => a)};
+				top = 4*s - c + (1 - (s/c))*s + 2 + round;
+				for(let u=0;u<2;u++){
+					top -= s/c;
+					if(u === ind){
+						for(let i=0;i<Math.max(Math.round(top),0);i++){
+							gully.squares.push([i-c-2-round,u,0])
+						}
+					}
+					else{
+						for(let i=0;i<Math.max(Math.floor(top),0);i++){
+							gully.squares.push([i-c-2-round,u,0])
+						}
+					}
+				
+				};
+				hats.push(gully)
+			})
+
+			lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
+				[-c-1,height-1,0],[-c-2,height-1,0],[-c-2,height-2,0],
+				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang],
+				[-c+s*2-2/c,height-s-c*2,-ang],[-c+s*3-2/c,height-s-c*3,-ang],[-c+s*4-2/c,height-s-c*4,-ang]
+			];
+			let cornerstair2 = {
+				size: 2 + c,
+				squares: lava.map(a => a)
+			};
+			top = 4*s - c + (1 - (s/c))*s + 2 - 1/c;
+			rounds = [];
+			for(let u=0;u<2;u++){
+				top -= s/c;
+				rounds.push(Math.ceil(top) - top);
+				for(let i=0;i<Math.max(Math.floor(top),0);i++){
+					cornerstair2.squares.push([i-c-2,u,0])
+				}
+			
+			};
+			hats.push(cornerstair2);
+			rounds.forEach((round,ind) => {
+				let gully = {size: 2 + c + round,squares: lava.map(a => a)};
+				top = 4*s - c + (1 - (s/c))*s + 2 - 1/c + round;
+				for(let u=0;u<2;u++){
+					top -= s/c;
+					if(u === ind){
+						for(let i=0;i<Math.max(Math.round(top),0);i++){
+							gully.squares.push([i-c-2-round,u,0])
+						}
+					}
+					else{
+						for(let i=0;i<Math.max(Math.floor(top),0);i++){
+							gully.squares.push([i-c-2-round,u,0])
+						}
+					}
+				
+				};
+				hats.push(gully)
+			})
+		}
+
+		//console.log(hats);
+
+		let best_i = 0;
+		let best_j = 0;
+		let best = 0;
+
+		for(let i=0;i<hats.length;i++){
+			for(let j=i;j<hats.length;j++){
+				let usable = width - hats[i].size - hats[j].size - middle;
+				if(usable < 0){
+					continue
+				}
+				let county = hats[i].squares.length + hats[j].squares.length + 5*Math.floor(usable*c);
+				if(county > best){
+					best = county;
+					best_i = i;
+					best_j = j;
+				}
+			}
+		}
+		if(best > coords.length){
+			coords = hats[best_i].squares.map(
+				a => [a[0] + hats[best_i].size,a[1],a[2]]
+			).concat(
+				hats[best_j].squares.map(a => [width - a[0] - hats[best_j].size, height - a[1], a[2] + 180]
+				)
+			);
+			let counter = 0;
+			while(coords.length < best){
+				for(let i=0;i<5;i++){
+					coords.push([hats[best_i].size + counter/c + i*s + s*s/c,height - s - i*c,-ang])
+				}
+				counter++;
+			}
+		}
+		return coords;
+	}
+	return []
+}
+
 function gen_slant(width,height){
 	if(height < 3){
 		return gen_slant3(width,height)
+	}
+	if(height > 4 && height < 5){
+		return gen_slant5(width,height)
 	}
 	let base_len = Math.floor(height) + 1;
 	let angle = Math.asin(height/Math.sqrt(base_len*base_len + 1)) - Math.asin(1/Math.sqrt(base_len*base_len + 1));
@@ -807,6 +1080,44 @@ function getSquares(width,height,recursive){
 			for(let j=0;j<cel_num*2;j++){
 				record.coords.push([w_gap + cel_num*3 - 1 + i,j,0])
 			}
+		}
+	};
+	if(width >= 4.67553009360455095163411127048315 && width < 5 && height > 4 && height < 5){//not a proper squeezing, but "a" squeezing
+		let c1 = Math.cos(39.8049589774499973462400047793339*Math.PI/180);
+		let s1 = Math.sin(39.8049589774499973462400047793339*Math.PI/180);
+		let c2 = Math.cos(36.6237863834465893201859433547440*Math.PI/180);
+		let s2 = Math.sin(36.6237863834465893201859433547440*Math.PI/180);
+		let delta = c1/s1 + s1/c1 + c2/s2 + s2/c2;
+		let skudd = (width - 4.67553009360455095163411127048315)/delta;
+		let vara = skudd*c1/s1;
+		let vara2 = skudd*(c1/s1 + s1/c1);
+		let vara3 = skudd*(c1/s1 + s1/c1 + s2/c2);
+		if(height >= 4.67553009360455095163411127048315 - skudd){
+			record.coords = [
+				[vara,0,0],//done
+				[vara+1,0,0],//done
+				[vara,1,0],//done
+				[width - 2,0,0],//done
+				[width - 1,0,0],//done
+				[width - 1,1,0],//done
+
+				[width - 1,2.11346013251256404552110105703833,0],
+
+				[vara2 + 1.84732482651028509718122846547049,height - 1,0],
+
+				[0,height - 1,0],//done
+				[width - 1,height - 1,0],//done
+
+				[vara+2.23126048295327188587059610137880,0.72248139200922175219168287171559,39.8049589774499973462400047793339],
+				[vara+2.22455253828333495549006470982323,2.09257499378867968722973417022601,39.8049589774499973462400047793339],
+				[vara+1.49271119994262770175560192341917,1.40873371618283432601585800379015,39.8049589774499973462400047793339],
+				[vara+2.96310182129397913960505888778287,1.40632266961506711340555903815146,39.8049589774499973462400047793339],
+
+				[vara+0.64017619242926608758416854327031,2,39.8049589774499973462400047793339],
+				[vara+1.3720175307976368,2.6838412775762401,39.8049589774499973462400047793339],
+
+				[vara3 + 2.54550971432895279624386048106669,3.26948797698562051517148994054930,-36.6237863834465893201859433547440],
+			]
 		}
 	}
 	if(width > 4 && width < 5 && height > 2 + s2 && height < 3 && record.coords.length < 10 && width + height*2 >= 5 + 4*s1){
@@ -1745,7 +2056,7 @@ function plotSquares(info,width,height){
 	info.coords.forEach(s => {
 		let square = document.createElementNS(svgNS,"rect");
 		square.setAttributeNS(null,"stroke","black");
-		square.setAttributeNS(null,"stroke-width","1");
+		square.setAttributeNS(null,"stroke-width","4");
 		square.setAttributeNS(null,"fill","green");
 		square.setAttributeNS(null,"x",s[0]*scale);
 		square.setAttributeNS(null,"y",s[1]*scale);
@@ -1755,7 +2066,11 @@ function plotSquares(info,width,height){
 			s[2] = 0
 		}
 		if(s[2] !== 0){
-			if(s[2] === -45 || s[2] === -135 || s[2] === 45 || s[2] === 135 || s[2] === 225){
+			if(s[2] % 90 === 0){
+				square.setAttributeNS(null,"fill","green");
+				square.setAttributeNS(null,"transform","rotate(" + s[2] + "," + s[0]*scale + "," + s[1]*scale +  ")");
+			}
+			else if(s[2] === -45 || s[2] === -135 || s[2] === 45 || s[2] === 135 || s[2] === 225){
 				square.setAttributeNS(null,"fill","blue");
 				square.setAttributeNS(null,"transform","rotate(" + s[2] + "," + s[0]*scale + "," + s[1]*scale +  ")");
 			}
@@ -1765,6 +2080,7 @@ function plotSquares(info,width,height){
 				square.setAttributeNS(null,"transform","rotate(" + (s[2]) +"," + s[0]*scale + "," + s[1]*scale +  ")");
 			}
 		}
+		//square.setAttributeNS(null,"fill","#ffcc99");
 		illustration.appendChild(square)
 	})
 	efficiency.innerText = "n = " + info.coords.length + ", density: " + (100 * info.coords.length/(width*height)).toPrecision(4) + "%";

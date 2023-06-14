@@ -2280,6 +2280,49 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
+	if(record.coords.length < 11 && width > 3 && height > 3 && width < 4 && height < 4){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let dist = Math.hypot(w_gap,h_gap+1);
+		if(dist >= 2){
+			let ang1 = Math.atan2(w_gap,h_gap+1);
+			let ang2 = Math.acos(2/dist);
+			let ang = ang1+ang2
+			let c = Math.cos(ang);
+			let s = Math.sin(ang);
+			let hog = h_gap*c*s;
+			let y2 = 1 + hog*c/s + s + (1 - (width - (2 - hog + s + (2*c - 1 - hog*c/s)*c/s) - s)*s/c)*c*c + s;
+			let y3 = c+s + (1 - (width - (1 - hog + s + (2*c - 1 - hog*c/s)*c/s) - 1 - s)*s/c)*c*c +  s + ((1 - hog + s + (2*c - 1 - hog*c/s)*c/s + c - (1 - (width - (1 - hog + s + (2*c - 1 - hog*c/s)*c/s) - 1 - s)*s/c)*s*c + s + c + c) - width)*c/s + s;
+			let delta = (1+y2-height)*s/c + (1 + y3 -height)*c/s;
+			let fin_ex = delta + 1 - hog + c - (1 - (width - (1 - hog + s + (2*c - 1 - hog*c/s)*c/s) - 1 - s)*s/c)*s*c + c + s + 1;
+			if(fin_ex <= width){
+				record.coords = [
+					[0,0],
+					[0,height - 1],
+					[0,height - 2],
+					[1,height - 1],
+					[width - 1,0],
+					[(1+y2-height)*s/c + 1 - hog + c - (1 - (width - (1 - hog + s + (2*c - 1 - hog*c/s)*c/s) - 1 - s)*s/c)*s*c + c,height - 1],
+
+					[1 - hog,1 + hog*c/s,ang*180/Math.PI-90],
+					[1 - hog + s + (2*c - 1 - hog*c/s)*c/s,c,ang*180/Math.PI-90],
+					[
+						1 - hog + s + (2*c - 1 - hog*c/s)*c/s + c - (1 - (width - (1 - hog + s + (2*c - 1 - hog*c/s)*c/s) - 1 - s)*s/c)*s*c,
+						c+s + (1 - (width - (1 - hog + s + (2*c - 1 - hog*c/s)*c/s) - 1 - s)*s/c)*c*c,
+					ang*180/Math.PI-90],
+					[
+						width - s - c,
+						y3-s,
+					ang*180/Math.PI-90],
+					[
+						1 - hog + c - (1 - (width - (1 - hog + s + (2*c - 1 - hog*c/s)*c/s) - 1 - s)*s/c)*s*c,
+						y2 - s,
+					ang*180/Math.PI-90],
+
+				]
+			}
+		}
+	}
 	return record
 }
 const svgNS = "http://www.w3.org/2000/svg";
@@ -2470,15 +2513,15 @@ function triangleFill3(a,b){
 
 function teff(){
 	let canvas = document.getElementById("triangle");
-	canvas.width = 1200;
-	canvas.height =1200;
+	canvas.width = 1500;
+	canvas.height =1500;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	for(let i=0;i<canvas.width;i++){
 		for(let j=i;j<canvas.height ;j++){
-			let res = getSquares(i*0.01,j*0.01).coords.length;
-			let sob = Math.floor(i*0.01)*Math.floor(j*0.01);
+			let res = getSquares(3+i/1500,3+j/1500).coords.length;
+			let sob = Math.floor(3+i/1500)*Math.floor(3+j/1500);
 			if(res > sob){
 				if(res - sob === 1){
 					ctx.fillStyle = "red";

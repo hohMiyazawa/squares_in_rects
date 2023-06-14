@@ -613,6 +613,167 @@ function gen_slant3(width,height){
 				}
 			}
 		}
+		let hats = [];
+		let nocap = {
+			size: c,
+			squares:  [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang]]
+		};
+		let top = 3*s;
+		let count = 0;
+		let middle = s*3 + s*s/c;
+		let rounds = [];
+		for(let u=0;u<2;u++){
+			top -= s/c;
+			rounds.push(Math.ceil(top) - top);
+			for(let i=0;i<Math.max(Math.floor(top),0);i++){
+				nocap.squares.push([i-c,u,0])
+			}
+		}
+		hats.push(nocap);
+		rounds.forEach((round,ind) => {
+			let gully = {size: c + round,squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang]]};
+			top = 3*s + round;
+			for(let u=0;u<2;u++){
+				top -= s/c;
+				if(u === ind){
+					for(let i=0;i<Math.max(Math.round(top),0);i++){
+						gully.squares.push([i-c-round,u,0])
+					}
+				}
+				else{
+					for(let i=0;i<Math.max(Math.floor(top),0);i++){
+						gully.squares.push([i-c-round,u,0])
+					}
+				}
+			
+			};
+			hats.push(gully)
+		})
+		rounds.forEach((round,ind) => {
+			let gully = {size: c + round + 1,squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang]]};
+			top = 3*s + round + 1;
+			for(let u=0;u<2;u++){
+				top -= s/c;
+				if(u === ind){
+					for(let i=0;i<Math.max(Math.round(top),0);i++){
+						gully.squares.push([i-c-round-1,u,0])
+					}
+				}
+				else{
+					for(let i=0;i<Math.max(Math.floor(top),0);i++){
+						gully.squares.push([i-c-round-1,u,0])
+					}
+				}
+			
+			};
+			hats.push(gully)
+		})
+		rounds.forEach((round,ind) => {
+			let gully = {size: c + round + 2,squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang]]};
+			top = 3*s + round + 2;
+			for(let u=0;u<2;u++){
+				top -= s/c;
+				if(u === ind){
+					for(let i=0;i<Math.max(Math.round(top),0);i++){
+						gully.squares.push([i-c-round-2,u,0])
+					}
+				}
+				else{
+					for(let i=0;i<Math.max(Math.floor(top),0);i++){
+						gully.squares.push([i-c-round-2,u,0])
+					}
+				}
+			
+			};
+			hats.push(gully)
+		})
+		let endian =  [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang]];
+		let avs1 = 2*s - s/c;
+		let avs2 = (height - 2*c - 1)*c/s;
+		hats.push({
+			size: c - s + 1/c,
+			squares: endian.map(a => a)
+		});
+		if(avs1 > avs2){
+			hats.push({
+				size: c - s + 1/c + 1 - avs1,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs1),0,0]])
+			});
+			hats.push({
+				size: c - s + 1/c + 1 - avs2,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs2),0,0],[-(c - s + 1/c + 1 - avs2),height - 1,0]])
+			});
+			hats.push({
+				size: c - s + 1/c + 2 - avs1,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs1),0,0],[-(c - s + 1/c + 1 - avs2),height - 1,0],[-(c - s + 1/c + 2 - avs1),0,0]])
+			});
+			hats.push({
+				size: c - s + 1/c + 2 - avs2,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs2),0,0],[-(c - s + 1/c + 1 - avs2),height - 1,0],[-(c - s + 1/c + 2 - avs2),0,0],[-(c - s + 1/c + 2 - avs2),height - 1,0]])
+			});
+		}
+		else{
+			hats.push({
+				size: c - s + 1/c + 1 - avs2,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs2),height - 1,0]])
+			});
+			hats.push({
+				size: c - s + 1/c + 1 - avs1,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs1),0,0],[-(c - s + 1/c + 1 - avs1),height - 1,0]])
+			});
+			hats.push({
+				size: c - s + 1/c + 2 - avs2,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs2),0,0],[-(c - s + 1/c + 1 - avs1),height - 1,0],[-(c - s + 1/c + 2 - avs2),height - 1,0]])
+			});
+			hats.push({
+				size: c - s + 1/c + 2 - avs1,
+				squares: endian.concat([[-(c - s + 1/c + 1 - avs1),0,0],[-(c - s + 1/c + 1 - avs1),height - 1,0],[-(c - s + 1/c + 2 - avs1),0,0],[-(c - s + 1/c + 2 - avs1),height - 1,0]])
+			});
+		}
+
+		hats.sort((a,b) => a.size - b.size);
+		let best = 0;
+		hats = hats.filter(a => {
+			if(a.squares.length <= best){
+				return false
+			}
+			best = a.squares.length;
+			return true
+		})
+
+		let best_i = 0;
+		let best_j = 0;
+		best = 0;
+
+		for(let i=0;i<hats.length;i++){
+			for(let j=i;j<hats.length;j++){
+				let usable = width - hats[i].size - hats[j].size - middle;
+				if(usable < 0){
+					continue
+				}
+				let county = hats[i].squares.length + hats[j].squares.length + 3*Math.floor(usable*c);
+				if(county > best){
+					best = county;
+					best_i = i;
+					best_j = j;
+				}
+			}
+		}
+		if(best > coords.length){
+			coords = hats[best_i].squares.map(
+				a => [a[0] + hats[best_i].size,a[1],a[2]]
+			).concat(
+				hats[best_j].squares.map(a => [width - a[0] - hats[best_j].size, height - a[1], a[2] + 180]
+				)
+			);
+			let counter = 0;
+			while(coords.length < best){
+				for(let i=0;i<3;i++){
+					coords.push([hats[best_i].size + counter/c + i*s + s*s/c,height - s - i*c,-ang])
+				}
+				counter++;
+			}
+		}
 		return coords;
 	}
 	return []
@@ -915,7 +1076,7 @@ function gen_slant5(width,height){
 }
 
 function gen_slant(width,height){
-	if(height < 3){
+	if(height > 2 && height < 3){
 		return gen_slant3(width,height)
 	}
 	if(height > 4 && height < 5){
@@ -2236,14 +2397,14 @@ function triangleFill3(a,b){
 function teff(){
 	let canvas = document.getElementById("triangle");
 	canvas.width = 1500;
-	canvas.height = 500;
+	canvas.height =1500;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	for(let i=0;i<canvas.width;i++){
-		for(let j=0;j<canvas.height ;j++){
-			let res = getSquares(i*0.02,4+j/500).coords.length;
-			let sob = Math.floor(i*0.02)*Math.floor(4+j/500);
+		for(let j=i;j<canvas.height ;j++){
+			let res = getSquares(i*0.01,j*0.01).coords.length;
+			let sob = Math.floor(i*0.01)*Math.floor(j*0.01);
 			if(res > sob){
 				if(res - sob === 1){
 					ctx.fillStyle = "red";
@@ -2267,7 +2428,7 @@ function teff(){
 					ctx.fillStyle = "black";
 				}
 				ctx.fillRect(i,j,1,1);
-				//ctx.fillRect(j,i,1,1);
+				ctx.fillRect(j,i,1,1);
 			}
 /*
 			let res = triangleFill3(i*0.01,j*0.01);

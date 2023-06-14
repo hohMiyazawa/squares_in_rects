@@ -2323,6 +2323,55 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
+	if(width > 6 && height > 3 && width < 9 && height < 4 && record.coords.length < Math.floor(height)*Math.floor(width)+2){
+		w_gap = width - Math.floor(width);
+		h_gap = height - Math.floor(height);
+
+		let c = solve_cos(h_gap + 1,2);
+		let s = Math.sqrt(1-c*c);
+		let angle = Math.acos(c)*180/Math.PI;
+		let x1 = 2 + w_gap + c*c*((6+w_gap)/2 - c/2 + s - 2 - w_gap);
+		let y1 = 1 + s*c*((6+w_gap)/2 - c/2 + s - 2 - w_gap);
+		let x2 = 2 + w_gap + c*c*((6+w_gap)/2 - c/2 + s - 2 - w_gap)  - c - s/c * (s - (1 + s*c*((6+w_gap)/2 - c/2 + s - 2 - w_gap) - s));
+
+		if(x2 - s - (s + c - h_gap)*c/s >= 1 && x1 - s - (y1 + c - 1 - h_gap)*c/s >= 2){
+			record.coords = [
+				[0,height-1,0],
+				[1,height-1,0],
+				[2,height-1,0],
+				[3,height-1,0],
+				[0,height-2,0],
+				[1,height-2,0],
+				[0,height-3,0],
+
+				[(6+w_gap) - 1,0,0],
+				[(6+w_gap) - 2,0,0],
+				[(6+w_gap) - 3,0,0],
+				[(6+w_gap) - 4,0,0],
+				[(6+w_gap) - 1,1,0],
+				[(6+w_gap) - 2,1,0],
+				[(6+w_gap) - 1,2,0],
+
+				[(6+w_gap)/2 - c/2 - s,height/2 - s/2 + c,angle-90],
+				[(6+w_gap)/2 - c/2,height/2 - s/2,angle-90],
+
+				[x1,y1,angle-270],
+				[x2,s,angle-270],
+				[(6+w_gap) - x1,height - y1,angle-90],
+				[(6+w_gap) - x2,height - s,angle-90],
+			];
+			if(width > 7){
+				record.coords.push([width - 1,0,0]);
+				record.coords.push([width - 1,1,0]);
+				record.coords.push([width - 1,2,0]);
+			}
+			if(width > 8){
+				record.coords.push([width - 2,0,0]);
+				record.coords.push([width - 2,1,0]);
+				record.coords.push([width - 2,2,0]);
+			}
+		}
+	}
 	return record
 }
 const svgNS = "http://www.w3.org/2000/svg";
@@ -2513,15 +2562,15 @@ function triangleFill3(a,b){
 
 function teff(){
 	let canvas = document.getElementById("triangle");
-	canvas.width = 1500;
-	canvas.height =1500;
+	canvas.width = 2000;
+	canvas.height =2000;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	for(let i=0;i<canvas.width;i++){
 		for(let j=i;j<canvas.height ;j++){
-			let res = getSquares(3+i/1500,3+j/1500).coords.length;
-			let sob = Math.floor(3+i/1500)*Math.floor(3+j/1500);
+			let res = getSquares(1+10*i/canvas.width,1+10*j/canvas.height).coords.length;
+			let sob = Math.floor(1+10*i/canvas.width)*Math.floor(1+10*j/canvas.height);
 			if(res > sob){
 				if(res - sob === 1){
 					ctx.fillStyle = "red";

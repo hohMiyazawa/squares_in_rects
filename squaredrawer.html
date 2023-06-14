@@ -2170,7 +2170,6 @@ function getSquares(width,height,recursive){
 			}
 			let numa = Math.floor(width/arr.x);
 			if(record.coords.length < arr.n*numa + Math.floor(width - arr.x*numa)*Math.floor(arr.y) + Math.floor(height - arr.y)*Math.floor(width)){
-				//alert("when?" + width + "," + height);
 				record.coords = arr.coords.map(a => a);
 				for(let i=1;i<numa;i++){
 					record.coords = record.coords.concat(arr.coords.map(a => [a[0]+i*arr.x,a[1],a[2]]))
@@ -2206,20 +2205,26 @@ function getSquares(width,height,recursive){
 		if(h_gap*h_gap + (w_gap+1)*(w_gap+1) >= 4){
 			let ang = Math.atan(h_gap/(w_gap+1));
 			let diag = Math.hypot(h_unit + w_gap - 2,h_unit - 2 + h_gap);
-			let ang2 = Math.acos((h_unit - 2)/diag);
+			let ang2 = Math.acos((h_unit - 2 + h_gap)/diag);
 			let diff_ang = ang2 - ang;
 			let diffComp = Math.cos(diff_ang);
 			let real_diag = diag*diffComp;
-			let count = (h_unit - 1)*(h_unit - 1) + (h_unit - 1) + 4 + Math.floor(real_diag)*2 + Math.floor(width) * Math.floor(height - h_unit) + h_unit * Math.floor(width - h_unit - 1,w_gap);
+			let count = (h_unit - 1)*(h_unit - 1) + (h_unit - 1) + 3 + Math.floor(real_diag)*2 + Math.floor(width) * Math.floor(height - h_unit) + h_unit * Math.floor(width - h_unit - 1,w_gap);
+			let slippery = real_diag - Math.floor(real_diag);
+			if(slippery/Math.sin(ang) >= 1){//extra square
+				count++
+			}
 			if(count > record.coords.length){
 				record.coords = [
 					[0,0,0],
 					[1,0,0],
 
 					[h_unit + w_gap,h_unit + h_gap - 1,0],
-					[h_unit + w_gap - 1,h_unit + h_gap - 1,0],
 					//[1,0,0],
 				]
+				if(slippery/Math.sin(ang) >= 1){
+					record.coords.push([h_unit + w_gap - 1,h_unit + h_gap - 1,0])
+				}
 				for(let i=0;i<Math.floor(width - h_unit - 1 - w_gap);i++){
 					for(let j=0;j<h_unit;j++){
 						record.coords.push([h_unit + w_gap + 1 + i,j,0])

@@ -2431,44 +2431,193 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
-	if(height < 2 && width > 3 && width < 4 && record.coords.length === Math.floor(width)){
+	if(height < 2 && width > 3&& record.coords.length === Math.floor(width)){
 		let w_gap = width - Math.floor(width);
-		function csy(c,height){
-			let s = Math.sqrt(1-c*c);
-			let x1 = (3 + w_gap) - (1 + c - (height - s - 1)*s/c) - s;
-			let y1 = c;
-			let y2 = height - c - s;
-			let y_diff = y1 - y2;
-			let x2 = 1 + c - (height - s - 1)*s/c + s - c + y_diff*c/s;
-			return x1 - x2;
-		}
-		function optimize(height){
-			let pivot1 = 0.7;
-			let pivot2 = 0.95;
-			while(pivot2 - pivot1 > 0.00000001){
-				let pivotA = pivot1 + (pivot2 - pivot1)/3;
-				let pivotB = pivot1 + 2*(pivot2 - pivot1)/3;
-				if(csy(pivotA,height) > csy(pivotB,height)){
-					pivot2 = pivotB
+		if(width < 4){
+			function csy(c,height){
+				let s = Math.sqrt(1-c*c);
+				let x1 = (3 + w_gap) - (1 + c - (height - s - 1)*s/c) - s;
+				let y1 = c;
+				let y2 = height - c - s;
+				let y_diff = y1 - y2;
+				let x2 = 1 + c - (height - s - 1)*s/c + s - c + y_diff*c/s;
+				return x1 - x2;
+			}
+			function optimize(height){
+				let pivot1 = 0.7;
+				let pivot2 = 0.95;
+				while(pivot2 - pivot1 > 0.00000001){
+					let pivotA = pivot1 + (pivot2 - pivot1)/3;
+					let pivotB = pivot1 + 2*(pivot2 - pivot1)/3;
+					if(csy(pivotA,height) > csy(pivotB,height)){
+						pivot2 = pivotB
+					}
+					else{
+						pivot1 = pivotA
+					}
 				}
-				else{
-					pivot1 = pivotA
+				return pivot1;
+			}
+			let c = optimize(height);
+			if(csy(c,height) >= 0){
+				let angle = Math.acos(c)*180/Math.PI;
+				let s = Math.sqrt(1-c*c);
+				record.coords = [
+					[0,0,0],
+					[(3+w_gap) - 1,height-1,0],
+					[1 + c - (height - s - 1)*s/c,height,angle-180],
+					[(3 + w_gap) - (1 + c - (height - s - 1)*s/c),0,angle],
+				];
+				for(let i=0;i<Math.floor(width - 3);i++){
+					record.coords.push([width - i - 1,0,0]);
 				}
 			}
-			return pivot1;
 		}
-		let c = optimize(height);
-		if(csy(c,height) >= 0){
-			let angle = Math.acos(c)*180/Math.PI;
-			let s = Math.sqrt(1-c*c);
-			record.coords = [
-				[0,0,0],
-				[(3+w_gap) - 1,height-1,0],
-				[1 + c - (height - s - 1)*s/c,height,angle-180],
-				[width - (1 + c - (height - s - 1)*s/c),0,angle],
-			];
-			for(let i=0;i<Math.floor(width - 3);i++){
-				record.coords.push([width - i - 1,0,0]);
+		else if(width < 6 && width > 5){
+			function csy(c,height){
+				let s = Math.sqrt(1-c*c);
+				let y2 = height - c - s;
+				let y_diff  = c - y2;
+				let y_diff2 = s - y2;
+				let unit = y_diff*c/s + y_diff2*s/c + c + s;
+				let x1 = (5 + w_gap) - (1 + c - (height - s - 1)*s/c) - s - unit;
+				let x2 = 1 + c - (height - s - 1)*s/c + s - c + y_diff*c/s;
+				return x1 - x2;
+			}
+			function optimize(height){
+				let pivot1 = 0.7;
+				let pivot2 = 0.95;
+				while(pivot2 - pivot1 > 0.00000001){
+					let pivotA = pivot1 + (pivot2 - pivot1)/3;
+					let pivotB = pivot1 + 2*(pivot2 - pivot1)/3;
+					if(csy(pivotA,height) > csy(pivotB,height)){
+						pivot2 = pivotB
+					}
+					else{
+						pivot1 = pivotA
+					}
+				}
+				return pivot1;
+			}
+			let c = optimize(height);
+			if(csy(c,height) >= 0){
+				let angle = Math.acos(c)*180/Math.PI;
+				let s = Math.sqrt(1-c*c);
+				let y2 = height - c - s;
+				let y_diff  = c - y2;
+				let y_diff2 = s - y2;
+				let unit = y_diff*c/s + y_diff2*s/c + c + s;
+				record.coords = [
+					[0,0,0],
+					[(5+w_gap) - 1,height-1,0],
+					[1 + c - (height - s - 1)*s/c,height,angle-180],
+					[width - unit - (1 + c - (height - s - 1)*s/c),0,angle],
+					[1 + c - (height - s - 1)*s/c + unit,height,angle-180],
+					[width - (1 + c - (height - s - 1)*s/c),0,angle],
+				];
+				for(let i=0;i<Math.floor(width - 5);i++){
+					record.coords.push([width - i - 1,0,0]);
+				}
+			}
+		}
+		else if(width < 8 && width > 7){
+			function csy(c,height){
+				let s = Math.sqrt(1-c*c);
+				let y2 = height - c - s;
+				let y_diff  = c - y2;
+				let y_diff2 = s - y2;
+				let unit = y_diff*c/s + y_diff2*s/c + c + s;
+				let x1 = (7 + w_gap) - (1 + c - (height - s - 1)*s/c) - s - unit*2;
+				let x2 = 1 + c - (height - s - 1)*s/c + s - c + y_diff*c/s;
+				return x1 - x2;
+			}
+			function optimize(height){
+				let pivot1 = 0.7;
+				let pivot2 = 0.95;
+				while(pivot2 - pivot1 > 0.00000001){
+					let pivotA = pivot1 + (pivot2 - pivot1)/3;
+					let pivotB = pivot1 + 2*(pivot2 - pivot1)/3;
+					if(csy(pivotA,height) > csy(pivotB,height)){
+						pivot2 = pivotB
+					}
+					else{
+						pivot1 = pivotA
+					}
+				}
+				return pivot1;
+			}
+			let c = optimize(height);
+			if(csy(c,height) >= 0){
+				let angle = Math.acos(c)*180/Math.PI;
+				let s = Math.sqrt(1-c*c);
+				let y2 = height - c - s;
+				let y_diff  = c - y2;
+				let y_diff2 = s - y2;
+				let unit = y_diff*c/s + y_diff2*s/c + c + s;
+				record.coords = [
+					[0,0,0],
+					[(7+w_gap) - 1,height-1,0],
+					[width - unit*2 - (1 + c - (height - s - 1)*s/c),0,angle],
+					[1 + c - (height - s - 1)*s/c,height,angle-180],
+					[width - unit - (1 + c - (height - s - 1)*s/c),0,angle],
+					[1 + c - (height - s - 1)*s/c + unit,height,angle-180],
+					[width - (1 + c - (height - s - 1)*s/c),0,angle],
+					[1 + c - (height - s - 1)*s/c + unit*2,height,angle-180],
+				];
+				for(let i=0;i<Math.floor(width - 7);i++){
+					record.coords.push([width - i - 1,0,0]);
+				}
+			}
+		}
+		else if(width < 10 && width > 9){
+			function csy(c,height){
+				let s = Math.sqrt(1-c*c);
+				let y2 = height - c - s;
+				let y_diff  = c - y2;
+				let y_diff2 = s - y2;
+				let unit = y_diff*c/s + y_diff2*s/c + c + s;
+				let x1 = (9 + w_gap) - (1 + c - (height - s - 1)*s/c) - s - unit*3;
+				let x2 = 1 + c - (height - s - 1)*s/c + s - c + y_diff*c/s;
+				return x1 - x2;
+			}
+			function optimize(height){
+				let pivot1 = 0.7;
+				let pivot2 = 0.95;
+				while(pivot2 - pivot1 > 0.00000001){
+					let pivotA = pivot1 + (pivot2 - pivot1)/3;
+					let pivotB = pivot1 + 2*(pivot2 - pivot1)/3;
+					if(csy(pivotA,height) > csy(pivotB,height)){
+						pivot2 = pivotB
+					}
+					else{
+						pivot1 = pivotA
+					}
+				}
+				return pivot1;
+			}
+			let c = optimize(height);
+			if(csy(c,height) >= 0){
+				let angle = Math.acos(c)*180/Math.PI;
+				let s = Math.sqrt(1-c*c);
+				let y2 = height - c - s;
+				let y_diff  = c - y2;
+				let y_diff2 = s - y2;
+				let unit = y_diff*c/s + y_diff2*s/c + c + s;
+				record.coords = [
+					[0,0,0],
+					[(9+w_gap) - 1,height-1,0],
+					[width - unit*3 - (1 + c - (height - s - 1)*s/c),0,angle],
+					[width - unit*2 - (1 + c - (height - s - 1)*s/c),0,angle],
+					[1 + c - (height - s - 1)*s/c,height,angle-180],
+					[width - unit - (1 + c - (height - s - 1)*s/c),0,angle],
+					[1 + c - (height - s - 1)*s/c + unit,height,angle-180],
+					[width - (1 + c - (height - s - 1)*s/c),0,angle],
+					[1 + c - (height - s - 1)*s/c + unit*2,height,angle-180],
+					[1 + c - (height - s - 1)*s/c + unit*3,height,angle-180],
+				];
+				for(let i=0;i<Math.floor(width - 9);i++){
+					record.coords.push([width - i - 1,0,0]);
+				}
 			}
 		}
 	}

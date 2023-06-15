@@ -53,6 +53,18 @@ let t = Math.tan(Math.PI*49.818/180);
 let squareList = [
 	//{x: 1, y:1, n:1, coords:[[0,0,0]]},
 	//{x: 2+s2, y:2+s2, n:5, coords:[[0,0,0],[1+s2,0,0],[0,1+s2,0],[1+s2,1+s2,0],[1-s2/2,1+s2/2,-45]]},
+	/*{x: 1.930283307*2, y:1.930283307, n:4, coords:[
+		[0,0,0],
+		[2.860566614, 0.930283307, 0],
+		[1.5203936335994768, 1.930283307, -139.48155143833685],
+		[2.3401729804005234, 0, 40.51844856166316]
+	]},
+	{x: 3.9, y:1.916568007, n:4, coords:[
+		[0,0,0],
+		[2.833136014,0.916568007,0],
+		[1.5357029402001012,1.916568007,-139.92472781948032],
+		[2.2974330737998985,0,40.07527218051967]
+	]},*/
 	{x: 3 + 2/Math.sqrt(5), y:3+1/Math.sqrt(5), n:10, coords:[
 		[0,0,0],[1,0,0],[0,1,0],
 		[2 + 2/Math.sqrt(5),0,0],
@@ -2113,6 +2125,53 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
+	//göbel strip x4:
+	/*if(width > 6 && height > 6 && (width + height - Math.floor(width) - Math.floor(height)) >= 4*s1 - 4){
+		let h_gap = height - Math.floor(width);
+		let w_gap = width - Math.floor(width);
+		let st = Math.floor(height - 3);
+		//let diag = s1*(st-1 + h_gap/2 + w_gap/2);
+		let diag = s1*(st-1 + h_gap/2 + w_gap/2 + 1);
+		//let count = st*st + st + 12 + 4*Math.floor(diag) + Math.floor(height)*Math.floor(width - Math.floor(height));
+		let count = st*st + st + 6 + 4*Math.floor(diag) + Math.floor(height)*Math.floor(width - Math.floor(height));
+		//console.log(count,width,height,"diag",diag,"st",st);
+		if(count > record.coords.length){
+			record.coords = [
+				[0,height - 1,0],
+				[0,height - 2,0],
+				[0,height - 3,0],
+				[1,height - 1,0],
+				[1,height - 2,0],
+				[2,height - 1,0],
+				[w_gap + Math.floor(height)-1,0,0],
+				[w_gap + Math.floor(height)-2,0,0],
+				[w_gap + Math.floor(height)-3,0,0],
+				[w_gap + Math.floor(height)-1,1,0],
+				[w_gap + Math.floor(height)-2,1,0],
+				[w_gap + Math.floor(height)-1,2,0],
+			];
+			for(let i=0;i<st;i++){
+				for(let j=0;j+i<st;j++){
+					record.coords.push([i,j,0])
+					record.coords.push([w_gap + Math.floor(height) - i - 1,height - j - 1,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width - Math.floor(height) - w_gap);i++){
+				for(let j=0;j<Math.floor(height);j++){
+					record.coords.push([st + 3 + w_gap + i,j,0])
+				}
+			}
+			for(let i = 0;i<Math.floor(diag);i++){
+				record.coords.push([1 - h_gap/2 + s2*i,3 + h_gap/2 + s2*i,-45]);
+				record.coords.push([1 - h_gap/2 + s2*i+s2,3 + h_gap/2 + s2*i-s2,-45]);
+				record.coords.push([1 - h_gap/2 + s2*i+s1,3 + h_gap/2 + s2*i-s1,-45]);
+				record.coords.push([1 - h_gap/2 + s2*i+s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
+			}
+			if(record.coords.length !== count){
+				throw "up"
+			}
+		}
+	}*/
 	//göbel strip x2:
 	if(width > 3 && height > 3 && (width + height - Math.floor(width) - Math.floor(height)) >= 2*s1 - 1){
 		let h_gap = height - Math.floor(width);
@@ -2372,6 +2431,47 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
+	if(height < 2 && width > 3 && width < 4 && record.coords.length === Math.floor(width)){
+		let w_gap = width - Math.floor(width);
+		function csy(c,height){
+			let s = Math.sqrt(1-c*c);
+			let x1 = (3 + w_gap) - (1 + c - (height - s - 1)*s/c) - s;
+			let y1 = c;
+			let y2 = height - c - s;
+			let y_diff = y1 - y2;
+			let x2 = 1 + c - (height - s - 1)*s/c + s - c + y_diff*c/s;
+			return x1 - x2;
+		}
+		function optimize(height){
+			let pivot1 = 0.7;
+			let pivot2 = 0.95;
+			while(pivot2 - pivot1 > 0.00000001){
+				let pivotA = pivot1 + (pivot2 - pivot1)/3;
+				let pivotB = pivot1 + 2*(pivot2 - pivot1)/3;
+				if(csy(pivotA,height) > csy(pivotB,height)){
+					pivot2 = pivotB
+				}
+				else{
+					pivot1 = pivotA
+				}
+			}
+			return pivot1;
+		}
+		let c = optimize(height);
+		if(csy(c,height) >= 0){
+			let angle = Math.acos(c)*180/Math.PI;
+			let s = Math.sqrt(1-c*c);
+			record.coords = [
+				[0,0,0],
+				[(3+w_gap) - 1,height-1,0],
+				[1 + c - (height - s - 1)*s/c,height,angle-180],
+				[width - (1 + c - (height - s - 1)*s/c),0,angle],
+			];
+			for(let i=0;i<Math.floor(width - 3);i++){
+				record.coords.push([width - i - 1,0,0]);
+			}
+		}
+	}
 	return record
 }
 const svgNS = "http://www.w3.org/2000/svg";
@@ -2568,9 +2668,9 @@ function teff(){
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	for(let i=0;i<canvas.width;i++){
-		for(let j=i;j<canvas.height ;j++){
-			let res = getSquares(1+10*i/canvas.width,1+10*j/canvas.height).coords.length;
-			let sob = Math.floor(1+10*i/canvas.width)*Math.floor(1+10*j/canvas.height);
+		for(let j=0;j<canvas.height ;j++){
+			let res = getSquares(1+1*i/canvas.width,3+1*j/canvas.height).coords.length;
+			let sob = Math.floor(1+1*i/canvas.width)*Math.floor(3+1*j/canvas.height);
 			if(res > sob){
 				if(res - sob === 1){
 					ctx.fillStyle = "red";
@@ -2597,7 +2697,7 @@ function teff(){
 					ctx.fillStyle = "black";
 				}
 				ctx.fillRect(i,j,1,1);
-				ctx.fillRect(j,i,1,1);
+				//ctx.fillRect(j,i,1,1);
 			}
 /*
 			let res = triangleFill3(i*0.01,j*0.01);

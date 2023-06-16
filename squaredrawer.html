@@ -974,6 +974,22 @@ function gen_slant4(width,height){
 				[1-(2 + s/c + 1/c - 5*s + c),0,0],
 				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang]]
 		});*/
+		let d_x = (c - 4*s + s/c + 3) - (c - 4*s + s/c + 1/c + 2*s);
+		let determinant = height - ((1 - (d_x))*s/c + 2*c + 1);
+		if(determinant >=1){
+			hats.push({
+				size: c - 4*s + s/c + 3,
+				squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],
+					[-(c - 4*s + s/c + 3),height - 1,0],
+
+					[-(c - 4*s + s/c + 3),0,0],
+					[-(c - 4*s + s/c + 3),1,0],
+					[-(c - 4*s + s/c + 3)+1,0,0],
+					[-(c - 4*s + s/c + 3)+2,0,0],
+					[-c + 4*s - 1/c - 2*s - s/c,1+c*2,-ang],[-c + 4*s - 1/c - s - s/c,1+c,-ang],
+				]
+			});
+		}
 
 		let addition = 0;
 		if(hoh_det < 1){
@@ -1078,7 +1094,7 @@ function gen_slant4(width,height){
 			};
 			hats.push(cornerstair2);
 			rounds.forEach((round,ind) => {
-				let gully = {size: 2 + c + round,squares: lava.map(a => a)};
+				let gully = {size: 2 + c + round + addition,squares: lava.map(a => a)};
 				top = 3*s - c + (1 - (s/c))*s + 2 - 1/c + round + addition;
 				for(let u=0;u<1;u++){
 					top -= s/c;
@@ -1270,6 +1286,43 @@ function gen_slant5(width,height){
 				[1-(2 + s/c + 1/c - 5*s + c),0,0],
 				[-c+s-1/c,height-s-c,-ang],[-c+s*2-1/c,height-s-c*2,-ang],[-c+s*3-1/c,height-s-c*3,-ang],[-c+s*4-1/c,height-s-c*4,-ang]]
 		});
+		let d_x = (c - 5*s + s/c + 3) - (c - 5*s + s/c + 1/c + 2*s);
+		let determinant = height - ((1 - (d_x))*s/c + 2*c + 2);
+		if(determinant >=1){
+			hats.push({
+				size: c - 5*s + s/c + 3,
+				squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
+					[-(c - 5*s + s/c + 3),height - 1,0],
+					[-(c - 5*s + s/c + 3),height - 2,0],
+
+					[-(c - 5*s + s/c + 3),0,0],
+					[-(c - 5*s + s/c + 3),1,0],
+					[-(c - 5*s + s/c + 3)+1,0,0],
+					[-(c - 5*s + s/c + 3)+2,0,0],
+					[-c + 5*s - 1/c - 2*s - s/c,1+c*2,-ang],[-c + 5*s - 1/c - s - s/c,1+c,-ang],
+				]
+			});
+		}
+		let d_x2 = (c - 5*s + s/c + 3) - (c - 5*s + s/c + 1/c + 3*s);
+		let determinant2 = height - ((1 - (d_x2))*s/c + 3*c + 1);
+		if(determinant2 >=1){
+			hats.push({
+				size: c - 5*s + s/c + 4,
+				squares: [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],
+					[-(c - 5*s + s/c + 3)-1,height - 1,0],
+					[-(c - 5*s + s/c + 3),height - 1,0],
+					[-(c - 5*s + s/c + 3)-1,height - 2,0],
+
+					[-(c - 5*s + s/c + 3)-1,0,0],
+					[-(c - 5*s + s/c + 3)-1,1,0],
+					[-(c - 5*s + s/c + 3),0,0],
+					[-(c - 5*s + s/c + 3)+1,0,0],
+					[-(c - 5*s + s/c + 3)+2,0,0],
+					[-c + 5*s - 1/c - 3*s - s/c,1+c*3,-ang],[-c + 5*s - 1/c - 2*s - s/c,1+c*2,-ang],[-c + 5*s - 1/c - s - s/c,1+c,-ang],
+					[-c + 5*s - 2/c - 2*s - s/c,1+c*2,-ang],[-c + 5*s - 2/c - s - s/c,1+c,-ang],
+				]
+			});
+		}
 		let addition = 0;
 		if(hoh_det < 1){
 			addition = c*(1 - hoh_det)/s;
@@ -1362,7 +1415,7 @@ function gen_slant5(width,height){
 				size: 2 + c + addition,
 				squares: lava.map(a => a)
 			};
-			top = 4*s - c + (1 - (s/c))*s + 2 - 1/c + addition;
+			top = c+2+addition - c + 5*s - 2/c;
 			rounds = [];
 			for(let u=0;u<2;u++){
 				top -= s/c;
@@ -1374,8 +1427,8 @@ function gen_slant5(width,height){
 			};
 			hats.push(cornerstair2);
 			rounds.forEach((round,ind) => {
-				let gully = {size: 2 + c + round,squares: lava.map(a => a)};
-				top = 4*s - c + (1 - (s/c))*s + 2 - 1/c + round + addition;
+				let gully = {size: 2 + c + round + addition,squares: lava.map(a => a)};
+				top = c+2+addition - c + 5*s - 2/c; + round
 				for(let u=0;u<2;u++){
 					top -= s/c;
 					if(u === ind){
@@ -1458,7 +1511,7 @@ function gen_slant(width,height){
 		return gen_slant3(width,height)
 	}
 	if(height > 3 && height < 4){
-		//return gen_slant4(width,height)
+		return gen_slant4(width,height)
 	}
 	if(height > 4 && height < 5){
 		return gen_slant5(width,height)

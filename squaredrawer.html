@@ -3005,9 +3005,10 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
-	if(width > 6 && height > 3 && width < 9 && height < 4 && record.coords.length < Math.floor(height)*Math.floor(width)+2){
+	if(width > 6 && height > 3){
 		w_gap = width - Math.floor(width);
 		h_gap = height - Math.floor(height);
+		let ch = h_gap + 3;
 
 		let c = solve_cos(h_gap + 1,2);
 		let s = Math.sqrt(1-c*c);
@@ -3016,45 +3017,76 @@ function getSquares(width,height,recursive){
 		let y1 = 1 + s*c*((6+w_gap)/2 - c/2 + s - 2 - w_gap);
 		let x2 = 2 + w_gap + c*c*((6+w_gap)/2 - c/2 + s - 2 - w_gap)  - c - s/c * (s - (1 + s*c*((6+w_gap)/2 - c/2 + s - 2 - w_gap) - s));
 
-		if(x2 - s - (s + c - h_gap)*c/s >= 1 && x1 - s - (y1 + c - 1 - h_gap)*c/s >= 2){
-			record.coords = [
-				[0,height-1,0],
-				[1,height-1,0],
-				[2,height-1,0],
-				[3,height-1,0],
-				[0,height-2,0],
-				[1,height-2,0],
-				[0,height-3,0],
+		let units = Math.min(
+			Math.floor((Math.floor(width) - 3)/3),
+			Math.floor((Math.floor(height) - 1)/2),
+		);
+		if(record.coords.length < Math.floor(height)*Math.floor(width) + 1 + units){
+			if(
+				x2 - s - (s + c - h_gap)*c/s >= 1
+				&& x1 - s - (y1 + c - 1 - h_gap)*c/s >= 2
+			){
+				record.coords = [
+					[0,ch-1,0],
+					[1,ch-1,0],
+					[2,ch-1,0],
+					[3,ch-1,0],
+					[0,ch-2,0],
+					[1,ch-2,0],
+					[0,ch-3,0],
 
-				[(6+w_gap) - 1,0,0],
-				[(6+w_gap) - 2,0,0],
-				[(6+w_gap) - 3,0,0],
-				[(6+w_gap) - 4,0,0],
-				[(6+w_gap) - 1,1,0],
-				[(6+w_gap) - 2,1,0],
-				[(6+w_gap) - 1,2,0],
+					[(6+w_gap) - 1,0,0],
+					[(6+w_gap) - 2,0,0],
+					[(6+w_gap) - 3,0,0],
+					[(6+w_gap) - 4,0,0],
+					[(6+w_gap) - 1,1,0],
+					[(6+w_gap) - 2,1,0],
+					[(6+w_gap) - 1,2,0],
 
-				[(6+w_gap)/2 - c/2 - s,height/2 - s/2 + c,angle-90],
-				[(6+w_gap)/2 - c/2,height/2 - s/2,angle-90],
+					[(6+w_gap)/2 - c/2 - s,ch/2 - s/2 + c,angle-90],
+					[(6+w_gap)/2 - c/2,ch/2 - s/2,angle-90],
 
-				[x1,y1,angle-270],
-				[x2,s,angle-270],
-				[(6+w_gap) - x1,height - y1,angle-90],
-				[(6+w_gap) - x2,height - s,angle-90],
-			];
-			if(width > 7){
-				record.coords.push([width - 1,0,0]);
-				record.coords.push([width - 1,1,0]);
-				record.coords.push([width - 1,2,0]);
-			}
-			if(width > 8){
-				record.coords.push([width - 2,0,0]);
-				record.coords.push([width - 2,1,0]);
-				record.coords.push([width - 2,2,0]);
+					[x1,y1,angle-270],
+					[x2,s,angle-270],
+					[(6+w_gap) - x1,ch - y1,angle-90],
+					[(6+w_gap) - x2,ch - s,angle-90],
+				];
+				for(let u=1;u<units;u++){
+					for(let i=0;i<u*3 + 2;i++){
+						record.coords.push([i,u*2 + 1 + h_gap,0]);
+					}
+					for(let i=0;i<u*3 + 4;i++){
+						record.coords.push([i,u*2 + 2 + h_gap,0]);
+					}
+
+					for(let i=0;i<u*2 + 1;i++){
+						record.coords.push([3 + w_gap + 3*u,i,0]);
+					}
+					for(let i=0;i<u*2 + 2;i++){
+						record.coords.push([4 + w_gap + 3*u,i,0]);
+					}
+					for(let i=0;i<u*2 + 3;i++){
+						record.coords.push([5 + w_gap + 3*u,i,0]);
+					}
+					record.coords.push([(6+w_gap)/2 - c/2 - s + u*3,ch/2 - s/2 + c + u*2,angle-90]);
+					record.coords.push([(6+w_gap)/2 - c/2 + u*3,ch/2 - s/2 + u*2,angle-90])
+					record.coords.push([(6+w_gap) - x1 + u*3,ch - y1 + u*2,angle-90]);
+					record.coords.push([(6+w_gap) - x2 + u*3,ch - s + u*2,angle-90]);
+				}
+				for(let i=0;i<Math.floor(width - 3 - units*3);i++){
+					for(let j=0;j<1 + units*2;j++){
+						record.coords.push([w_gap + 3 + units*3 + i,j,0]);
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - 1 - 2*units);j++){
+						record.coords.push([i,h_gap + 1 + units*2,0]);
+					}
+				}
 			}
 		}
 	}
-	if(height < 2 && width > 3&& record.coords.length === Math.floor(width)){
+	if(height < 2 && width > 3&& record.coords.length === Math.floor(width)){//even 2 strats
 		let w_gap = width - Math.floor(width);
 		if(width < 4){
 			function csy(c,height){
@@ -3435,8 +3467,8 @@ function triangleFill3(a,b){
 
 function teff(){
 	let canvas = document.getElementById("triangle");
-	canvas.width = 1000;
-	canvas.height =1000;
+	canvas.width = 2000;
+	canvas.height =2000;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);

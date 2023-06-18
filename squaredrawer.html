@@ -3393,8 +3393,8 @@ function getSquares(width,height,recursive){
 		}
 	}
 	if(width > 6 && height > 3){
-		w_gap = width - Math.floor(width);
-		h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let h_gap = height - Math.floor(height);
 		let ch = h_gap + 3;
 
 		let c = solve_cos(h_gap + 1,2);
@@ -3717,6 +3717,52 @@ function getSquares(width,height,recursive){
 				];
 				for(let i=0;i<Math.floor(width - 9);i++){
 					record.coords.push([width - i - 1,0,0]);
+				}
+			}
+		}
+	}
+	if(height > 3 && width > 7 && width < 8 && record.coords.length < Math.floor(width)*Math.floor(height) + 1){
+		let w_gap = width - Math.floor(width);
+		let h_gap = height - Math.floor(height);
+		let grab = s2 - (1+h_gap/2 - s2);
+		let mhei = 3 + h_gap;
+		let hh = mhei - s1*2 - s2;
+		let delta_1 = Math.max(0,2*(1 - (mhei - 1 - h_gap/2 - s1)));
+		let delta_2 = Math.max(0,1 - (mhei/2 - s2/2 - s2));
+		if(
+			1 + s2 - h_gap/2 + grab + s1 - hh/2 + s2 + s2/2 <= width/2
+			&& width/2 - s2/2 - delta_1 - delta_2 - 2 >= 1
+		){
+			record.coords = [
+				[0,0,0],
+				[1-h_gap/2,1+h_gap/2,-45],
+				[1-h_gap/2 + s2,1+h_gap/2+s2,-45],
+				[1 + s2 - h_gap/2 + grab,s2,-45],
+				[1 + s2 - h_gap/2 + grab + s2,s1,-45],
+				[1 + s2 - h_gap/2 + grab + s1,s2,-45],
+
+				[width/2 - s2/2,s1 + hh/2,-45],
+				[width/2 - s2/2 - s2,s1 + hh/2 + s2,-45],
+
+				[width - (1 + s2 - h_gap/2 + grab + s2) - s1 - s2,s1 + hh + s1,-45],
+				[width - (1 + s2 - h_gap/2 + grab + s2) - s1,s1 + hh + s2,-45],
+				[width - (1 + s2 - h_gap/2 + grab) - s1,s1 + hh + s1,-45],
+				[width - (1-h_gap/2) - s1 - s2,s1 + hh + grab,-45],
+				[width - (1-h_gap/2) - s1,s1 + hh + grab + s2,-45],
+				[0,mhei - 1,0],
+				[0,mhei - 2,0],
+				[1,mhei - 1,0],
+
+				[width - 1,mhei - 1,0],
+				[width - 1,0,0],
+				[width - 2,0,0],
+				[width - 1,1,0],
+				[ 2 + delta_1,mhei - 1],
+				[width -3 - delta_1,0],
+			]
+			for(let i=0;i<Math.floor(height - 3);i++){
+				for(let j=0;j<Math.floor(width);j++){
+					record.coords.push([j,i + mhei,0])
 				}
 			}
 		}

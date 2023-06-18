@@ -213,6 +213,7 @@ let squareList = [
 		[2 + 4*s1/3 + (4*s1/3 - 1)/2+(1/2-s1/3)-s2,1+(4*s1/3 - 1)/2+(1/2-s1/3)+s2,135],
 		[2 + 4*s1/3 + (4*s1/3 - 1)/2-s2+(1/2-s1/3)-s2,1+(4*s1/3 - 1)/2-s2+(1/2-s1/3)+s2,135],
 	]},
+	{x: 7.87816333, y:3.939081665, n:25, coords:[[0,0,0],[1,0,0],[0,1,0],[0,2.939081665,0],[1.1474152133288913,3.1370389580689793,-36.67438836864271],[0.5501485256099454,2.3349962511379583,-36.67438836864271],[1.229885337821899,1.5734904506556011,-36.67438836864271],[1.8271520255408449,2.375533157586622,-36.67438836864271],[2.4788539108812504,3.1370389580689793,-36.67438836864271],[3.8781633299999996,2.939081665,0],[4.87816333,2.939081665,0],[5.87816333,2.939081665,0],[6.87816333,2.939081665,0],[6.87816333,1.9390816649999998,0],[5.87816333,1.9390816649999998,0],[6.87816333,0.9390816649999998,0],[2.0496337781690155,0,0],[3.667670314113117,1.404185911214613,231.82710672978004],[4.285706850057219,2.190335286485124,231.82710672978004],[3.2352179984764926,0.8541017365748678,51.82710672978004],[3.853254534420594,1.6402511118453793,51.82710672978004],[4.939693203727325,1.404185911214613,231.82710672978004],[5.605306769219964,2.1529322897294882,231.82710672978004],[4.951320415549858,2.939081665,231.82710672978004],[6.288697736410023,1.404185911214613,231.82710672978004]]},
 	{x: 5+s2, y:5+s2, n:27, coords:[
 		[0,0,0],
 		[1,0,0],
@@ -3669,7 +3670,7 @@ function getSquares(width,height,recursive){
 				}
 			}
 		}
-		else if(width < 10 && width > 8){
+		/*else if(width < 10 && width > 8){
 			function csy(c,height){
 				let s = Math.sqrt(1-c*c);
 				let y2 = height - c - s;
@@ -3719,54 +3720,134 @@ function getSquares(width,height,recursive){
 					record.coords.push([width - i - 1,0,0]);
 				}
 			}
-		}
+		}*/
 	}
-	if(height > 3 && width > 7 && width < 8 && record.coords.length < Math.floor(width)*Math.floor(height) + 1){
-		let w_gap = width - Math.floor(width);
-		let h_gap = height - Math.floor(height);
-		let grab = s2 - (1+h_gap/2 - s2);
-		let mhei = 3 + h_gap;
-		let hh = mhei - s1*2 - s2;
-		let delta_1 = Math.max(0,2*(1 - (mhei - 1 - h_gap/2 - s1)));
-		let delta_2 = Math.max(0,1 - (mhei/2 - s2/2 - s2));
-		if(
-			1 + s2 - h_gap/2 + grab + s1 - hh/2 + s2 + s2/2 <= width/2
-			&& width/2 - s2/2 - delta_1 - delta_2 - 2 >= 1
-		){
-			record.coords = [
-				[0,0,0],
-				[1-h_gap/2,1+h_gap/2,-45],
-				[1-h_gap/2 + s2,1+h_gap/2+s2,-45],
-				[1 + s2 - h_gap/2 + grab,s2,-45],
-				[1 + s2 - h_gap/2 + grab + s2,s1,-45],
-				[1 + s2 - h_gap/2 + grab + s1,s2,-45],
+	if(
+		(
+			(height > 3 && width > 7 && width < 8)
+			|| (width > 3 && height > 7 && height < 8)
+		)
+		&& record.coords.length < Math.floor(width)*Math.floor(height) + 1
+	){
+		let generate = function(width,height,flip){
+			let w_gap = width - Math.floor(width);
+			let h_gap = height - Math.floor(height);
+			let grab = s2 - (1+h_gap/2 - s2);
+			let mhei = 3 + h_gap;
+			let hh = mhei - s1*2 - s2;
+			let delta_1 = Math.max(0,2*(1 - (mhei - 1 - h_gap/2 - s1)));
+			let delta_2 = Math.max(0,1 - (mhei/2 - s2/2 - s2));
+			if(
+				1 + s2 - h_gap/2 + grab + s1 - hh/2 + s2 + s2/2 <= width/2
+				&& width/2 - s2/2 - delta_1 - delta_2 - 2 >= 1
+			){
+				let coords = [
+					[0,0,0],
+					[1-h_gap/2,1+h_gap/2,-45],
+					[1-h_gap/2 + s2,1+h_gap/2+s2,-45],
+					[1 + s2 - h_gap/2 + grab,s2,-45],
+					[1 + s2 - h_gap/2 + grab + s2,s1,-45],
+					[1 + s2 - h_gap/2 + grab + s1,s2,-45],
 
-				[width/2 - s2/2,s1 + hh/2,-45],
-				[width/2 - s2/2 - s2,s1 + hh/2 + s2,-45],
+					[width/2 - s2/2,s1 + hh/2,-45],
+					[width/2 - s2/2 - s2,s1 + hh/2 + s2,-45],
 
-				[width - (1 + s2 - h_gap/2 + grab + s2) - s1 - s2,s1 + hh + s1,-45],
-				[width - (1 + s2 - h_gap/2 + grab + s2) - s1,s1 + hh + s2,-45],
-				[width - (1 + s2 - h_gap/2 + grab) - s1,s1 + hh + s1,-45],
-				[width - (1-h_gap/2) - s1 - s2,s1 + hh + grab,-45],
-				[width - (1-h_gap/2) - s1,s1 + hh + grab + s2,-45],
-				[0,mhei - 1,0],
-				[0,mhei - 2,0],
-				[1,mhei - 1,0],
+					[width - (1 + s2 - h_gap/2 + grab + s2) - s1 - s2,s1 + hh + s1,-45],
+					[width - (1 + s2 - h_gap/2 + grab + s2) - s1,s1 + hh + s2,-45],
+					[width - (1 + s2 - h_gap/2 + grab) - s1,s1 + hh + s1,-45],
+					[width - (1-h_gap/2) - s1 - s2,s1 + hh + grab,-45],
+					[width - (1-h_gap/2) - s1,s1 + hh + grab + s2,-45],
+					[0,mhei - 1,0],
+					[0,mhei - 2,0],
+					[1,mhei - 1,0],
 
-				[width - 1,mhei - 1,0],
-				[width - 1,0,0],
-				[width - 2,0,0],
-				[width - 1,1,0],
-				[ 2 + delta_1,mhei - 1],
-				[width -3 - delta_1,0],
-			]
-			for(let i=0;i<Math.floor(height - 3);i++){
-				for(let j=0;j<Math.floor(width);j++){
-					record.coords.push([j,i + mhei,0])
+					[width - 1,mhei - 1,0],
+					[width - 1,0,0],
+					[width - 2,0,0],
+					[width - 1,1,0],
+					[ 2 + delta_1,mhei - 1],
+					[width -3 - delta_1,0],
+				]
+				for(let i=0;i<Math.floor(height - 3);i++){
+					for(let j=0;j<Math.floor(width);j++){
+						coords.push([j,i + mhei,0])
+					}
+				}
+				if(flip){
+					record.coords = coords
+				}
+				else{
+					record.coords = transpose(coords)
 				}
 			}
 		}
+		if(height < 7){
+			generate(width,height)
+		}
+		else{
+			generate(height,width)
+		}
 	}
+	/*if(height > 3 && height < 4 && width > 7 && width < 8){
+		let w_gap = width - Math.floor(width);
+		let h_gap = height - Math.floor(height);
+		let c = (1 - Math.sqrt(1 - h_gap))/h_gap;
+		let ang = Math.acos(c)*180/Math.PI;
+		let s = Math.sqrt(1 - c*c);
+		let skaertiff = s/c - s*2 + c*(height - c*2 - 1)/s - 1;
+		let hogh = skaertiff * s;
+		let minim = (1 - (height - c*2 - s - c*hogh - s)) * (c/s + s/c);
+
+		let hypot = Math.hypot(w_gap - minim,1+h_gap);
+		let angle2 = Math.asin((1+h_gap)/hypot) - Math.acos(2/hypot) + 0.06;
+		let ang2 = angle2*180/Math.PI;
+		let c3 = Math.cos(angle2);
+		let s3 = Math.sin(angle2);
+
+		let bounce = Math.max(0,1 - (height - (3*s3 + c3)));
+
+		let l_reach = 1 + s/c + c*c/s - hogh/s + c + s;
+		
+		if(l_reach <= width - 4){
+			record.coords = [
+				[0,0,0],[1,0,0],
+				[0,1,0],
+				[0,height - 1,0],
+
+				[1 + s/c - s,height - c,-ang],
+				[1 + s/c - s*2,height - c*2,-ang],
+
+				[1 + s/c - s*2 + c - s* hogh,height - c*2 - s - c*hogh,-ang],
+				[1 + s/c - s + c - s* hogh,height - c*2 - s - c*hogh + c,-ang],
+
+				[1 + s/c + c*c/s - hogh/s,height - c,-ang],
+
+				[width - 4,height - 1,0],
+				[width - 3,height - 1,0],
+				[width - 2,height - 1,0],
+				[width - 1,height - 1,0],
+
+				[width - 1,height - 2,0],
+				[width - 2,height - 2,0],
+
+				[width - 1,height - 3,0],
+
+				[2 + minim,0,0],
+
+				[3 + minim + c3,s3 + c3,ang2 + 180],
+				[3 + minim + c3+c3,s3 + c3+s3,ang2 + 180],
+
+				[3 + minim + (1-c3)*s3*c3,c3 + (1-c3)*s3*s3,ang2],
+				[3 + minim + (1-c3)*s3*c3 + c3,c3 + (1-c3)*s3*s3+s3,ang2],
+
+				[3 + minim + c3 + 1/s3,s3 + c3,ang2 + 180],
+				[3 + minim + c3 + 1/s3+c3 + s3*bounce/c3,c3+2*s3 - bounce,ang2 + 180],
+
+				[3 + minim + c3+c3+c3 + s3*bounce/c3,c3+3*s3 - bounce,ang2 + 180],
+				[3 + minim + c3 + 2/s3 + bounce*(c3/s3 + s3/c3),s3 + c3,ang2 + 180],
+			]
+		}
+	}*/
 	return record
 }
 const svgNS = "http://www.w3.org/2000/svg";

@@ -3782,10 +3782,10 @@ function getSquares(width,height,recursive){
 			}
 		}
 		if(height < 7){
-			generate(width,height)
+			generate(width,height,true)
 		}
 		else{
-			generate(height,width)
+			generate(height,width,false)
 		}
 	}
 	/*if(height > 3 && height < 4 && width > 7 && width < 8){

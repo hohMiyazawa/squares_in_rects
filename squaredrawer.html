@@ -657,6 +657,8 @@ let squareList = [
 		[2+0.5528287570229815420828952609963*0.27358132164329535,2-0.5528287570229815420828952609963*0.9618488760964 ,15.87748802641120487430747058636],
 		[3.130091051386119317674464968677,0.6725634519255280892766616780316,21.66800178394828357540380795975],
 	]},
+	{x: 8.80546928834,y: 8.80546928834, n:68, coords:[[0,1,0],[1,1,0],[6.805469288339999,1,0],[7.805469288339999,1,0],[0,2,0],[7.805469288339999,2,0],[0,3,0],[7.805469288339999,3.8054692883399994,0],[0,4.805469288339999,0],[7.805469288339999,4.805469288339999,0],[0,5.805469288339999,0],[1,5.805469288339999,0],[6.805469288339999,5.805469288339999,0],[7.805469288339999,5.805469288339999,0],[2.5,1,26.56505117707799],[2.052786404500042,1.8944271909999157,26.56505117707799],[1.6055728090000838,2.7888543819998315,26.56505117707799],[1.158359213500126,3.6832815729997477,26.56505117707799],[3.618033988749895,1,26.56505117707799],[3.170820393249937,1.8944271909999157,26.56505117707799],[2.7236067977499787,2.7888543819998315,26.56505117707799],[2.276393202250021,3.6832815729997477,26.56505117707799],[1.8291796067500627,4.577708763999663,26.56505117707799],[4.740450670735689,0.9912346135282009,26.56505117707799],[4.293237075235731,1.8856618045281168,26.56505117707799],[3.846023479735773,2.7800889955280326,26.56505117707799],[3.398809884235815,3.6745161865279483,26.56505117707799],[2.951596288735857,4.568943377527864,26.56505117707799],[2.504382693235899,5.463370568527781,26.56505117707799],[5.854101966249685,1,26.56505117707799],[5.406888370749726,1.8944271909999157,26.56505117707799],[4.959674775249768,2.7888543819998315,26.56505117707799],[4.512461179749811,3.6832815729997477,26.56505117707799],[4.065247584249852,4.577708763999663,26.56505117707799],[3.6180339887498945,5.47213595499958,26.56505117707799],[6.529305052735521,1.8856618045281168,26.56505117707799],[6.082091457235562,2.7800889955280326,26.56505117707799],[5.634877861735605,3.6745161865279483,26.56505117707799],[5.187664266235647,4.568943377527864,26.56505117707799],[4.740450670735689,5.463370568527781,26.56505117707799],[7.200125445985457,2.7800889955280326,26.56505117707799],[6.7529118504855,3.6745161865279483,26.56505117707799],[6.305698254985542,4.568943377527864,26.56505117707799],[5.858484659485584,5.463370568527781,26.56505117707799],[0,0,0],[1,0,0],[2,0,0],[3,0,0],[7.805469288339999,0,0],[6.805469288339999,0,0],[5.805469288339999,0,0],[4.805469288339999,0,0],[7.805469288339999,7.805469288339999,0],[7.805469288339999,6.805469288339999,0],[6.805469288339999,7.805469288339999,0],[6.805469288339999,6.805469288339999,0],[5.805469288339999,7.805469288339999,0],[5.805469288339999,6.805469288339999,0],[4.805469288339999,7.805469288339999,0],[4.805469288339999,6.805469288339999,0],[0,7.805469288339999,0],[0,6.805469288339999,0],[1,7.805469288339999,0],[1,6.805469288339999,0],[2,7.805469288339999,0],[2,6.805469288339999,0],[3,7.805469288339999,0],[3,6.805469288339999,0]]
+	},
 	{x: 8.88166675700900462482351214891, y: 8.88166675700900462482351214891, n:70, coords:[
 		[0,0,0],[1,0,0],[2,0,0],[3,0,0],[4,0,0],[5,0,0],
 		[0,1,0],[1,1,0],[2,1,0],[3,1,0],[4,1,0],
@@ -2029,7 +2031,7 @@ function gen_slant6(width,height){
 			};
 			top = c+2+addition - c + 6*s - 2/c;
 			rounds = [];
-			for(let u=0;u<2;u++){
+			for(let u=0;u<3;u++){
 				top -= s/c;
 				rounds.push(Math.ceil(top) - top);
 				for(let i=0;i<Math.max(Math.floor(top),0);i++){
@@ -2040,8 +2042,8 @@ function gen_slant6(width,height){
 			hats.push(cornerstair2);
 			rounds.forEach((round,ind) => {
 				let gully = {size: 2 + c + round + addition,squares: lava.map(a => a)};
-				top = c+2+addition - c + 6*s - 2/c; + round
-				for(let u=0;u<2;u++){
+				top = c+2+addition - c + 6*s - 2/c + round;
+				for(let u=0;u<3;u++){
 					top -= s/c;
 					if(u === ind){
 						for(let i=0;i<Math.max(Math.round(top),0);i++){
@@ -3788,7 +3790,7 @@ function getSquares(width,height,recursive){
 			generate(height,width,false)
 		}
 	}
-	/*if(height > 3 && height < 4 && width > 7 && width < 8){
+	if(height > 3 && height < 4 && width > 7 && width < 8){
 		let w_gap = width - Math.floor(width);
 		let h_gap = height - Math.floor(height);
 		let c = (1 - Math.sqrt(1 - h_gap))/h_gap;
@@ -3799,16 +3801,48 @@ function getSquares(width,height,recursive){
 		let minim = (1 - (height - c*2 - s - c*hogh - s)) * (c/s + s/c);
 
 		let hypot = Math.hypot(w_gap - minim,1+h_gap);
-		let angle2 = Math.asin((1+h_gap)/hypot) - Math.acos(2/hypot) + 0.06;
-		let ang2 = angle2*180/Math.PI;
+		let minangle = Math.asin((1+h_gap)/hypot) - Math.acos(2/hypot);
+		let angle2 = minangle + 0;
 		let c3 = Math.cos(angle2);
 		let s3 = Math.sin(angle2);
 
-		let bounce = Math.max(0,1 - (height - (3*s3 + c3)));
+		let bounce = Math.max(0,1 - height + 3*s3 + c3);
 
 		let l_reach = 1 + s/c + c*c/s - hogh/s + c + s;
+
+		let uv   = width - 5 - minim
+		let c2_x = c3*2 + 1/s3 + s3*bounce/c3;
+		let c2_y = c3+2*s3 - bounce;
+		let det  = c2_y - (uv - c2_x)*c3/s3;
+		let count = 0;
+
+		let c4_x = c3 + 2/s3 + bounce*(c3/s3 + s3/c3);
+		let c4_y = s3 + c3;
+
+		let det2 = c4_y - ((uv+1) - c4_x)*c3/s3;
+		while(det > 1 + h_gap && count < 30){
+			c3 -= 0.003;
+			s3 = Math.sqrt(1 - c3*c3);
+			bounce = Math.max(0,1 - height + 3*s3 + c3);
+			c2_x = c3*2 + 1/s3 + s3*bounce/c3
+			c2_y = c3+2*s3 - bounce
+			det  = c2_y - (uv - c2_x)*c3/s3;
+			count++;
+		}
+		c4_x = c3 + 2/s3 + bounce*(c3/s3 + s3/c3);
+		c4_y = s3 + c3;
+		det2 = c4_y - ((uv+1) - c4_x)*c3/s3;
+		angle2 = Math.acos(c3);
+		let ang2 = angle2*180/Math.PI;
+
+		let c6_x = 3 + minim + (1-c3)*s3*c3 - s3;
+		let c6_y = c3 + (1-c3)*s3*s3 + c3;
+		let c8_x = 1 + s/c - s*2 + c - s* hogh + c;
+		let c8_y = height - c*2 - s - c*hogh - s;
+		let c10_y = c8_y + (c6_x - c8_x)*c/s;
 		
-		if(l_reach <= width - 4){
+		
+		if(l_reach <= width - 4 && det <= 1 + h_gap && det2 <= h_gap && c10_y >= c6_y){
 			record.coords = [
 				[0,0,0],[1,0,0],
 				[0,1,0],
@@ -3834,20 +3868,34 @@ function getSquares(width,height,recursive){
 
 				[2 + minim,0,0],
 
-				[3 + minim + c3,s3 + c3,ang2 + 180],
-				[3 + minim + c3+c3,s3 + c3+s3,ang2 + 180],
+				[3 + minim + c3,s3 + c3,ang2 + 180],//top1
+				[3 + minim + c3*2,s3 + c3+s3,ang2 + 180],//cent1
 
-				[3 + minim + (1-c3)*s3*c3,c3 + (1-c3)*s3*s3,ang2],
-				[3 + minim + (1-c3)*s3*c3 + c3,c3 + (1-c3)*s3*s3+s3,ang2],
+				[3 + minim + (1-c3)*s3*c3,c3 + (1-c3)*s3*s3,ang2],//middle
+				[3 + minim + (1-c3)*s3*c3 + c3,c3 + (1-c3)*s3*s3+s3,ang2],//middle2
 
-				[3 + minim + c3 + 1/s3,s3 + c3,ang2 + 180],
-				[3 + minim + c3 + 1/s3+c3 + s3*bounce/c3,c3+2*s3 - bounce,ang2 + 180],
+				[3 + minim + c3 + 1/s3,s3 + c3,ang2 + 180],//top2
+				[3 + minim + c3*2 + 1/s3+ + s3*bounce/c3,c3+2*s3 - bounce,ang2 + 180],//cent2
 
-				[3 + minim + c3+c3+c3 + s3*bounce/c3,c3+3*s3 - bounce,ang2 + 180],
-				[3 + minim + c3 + 2/s3 + bounce*(c3/s3 + s3/c3),s3 + c3,ang2 + 180],
+				[3 + minim + c3*3 + s3*bounce/c3,c3+3*s3 - bounce,ang2 + 180],//bottom1
+				[3 + minim + c3 + 2/s3 + bounce*(c3/s3 + s3/c3),s3 + c3,ang2 + 180],//top3
 			]
 		}
-	}*/
+		//uv   = width - 5 - minim
+		//c2_x = c3*2 + 1/s3 + s3*bounce/c3
+		//c2_y = c3+2*s3 - bounce
+		//det  = c2_y - (uv - c2_x)*c3/s3
+		//det  = c3+2*s3 - bounce - (uv - (c3*2 + 1/s3+ + s3*bounce/c3))*c3/s3
+		//det  = c3+2*s3 - bounce - (uv*c3/s3 - c3/s3*(c3*2 + 1/s3+ + s3*bounce/c3))
+		//det  = c3+2*s3 - bounce - uv*c3/s3 + c3/s3*(c3*2 + 1/s3+ + s3*bounce/c3)
+		//det  = c3+2*s3 - bounce - uv*c3/s3 + (c3*2 * c3/s3 + c3/s3^2 + bounce)
+		//det  = c3+2*s3 - bounce - uv*c3/s3 + c3*2 * c3/s3 + c3/s3^2 + bounce
+		//det  = c3+2*s3 - uv*c3/s3 + c3*2 * c3/s3 + c3/s3^2
+		//  1 + h_gap  = c3+2*s3 - uv*c3/s3 + c3*2 * c3/s3 + c3/s3^2
+		//  1 + h_gap  = c3+2*s3 - uv*c3/s3 + c3*2 * c3/s3 + c3/s3^2
+		//  1 + h_gap  = c3+2*s3 - uv*c3/s3 + c3*2 * c3/s3 + c3/(1 - c3^2)
+		//  1 + h_gap  = x + 2*sqrt(1 - x^2) - u*x/sqrt(1 - x^2) + x*2 * x/sqrt(1 - x^2) + x/(1 - x^2)
+	}
 	return record
 }
 const svgNS = "http://www.w3.org/2000/svg";
@@ -4039,15 +4087,15 @@ function triangleFill3(a,b){
 
 function teff(){
 	let canvas = document.getElementById("triangle");
-	canvas.width = 1000;
-	canvas.height =1000;
+	canvas.width = 2000;
+	canvas.height =2000;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	for(let i=0;i<canvas.width;i++){
 		for(let j=i;j<canvas.height ;j++){
-			let res = getSquares(1+12*i/canvas.width,1+12*j/canvas.height).coords.length;
-			let sob = Math.floor(1+12*i/canvas.width)*Math.floor(1+12*j/canvas.height);
+			let res = getSquares(1+9*i/canvas.width,1+9*j/canvas.height).coords.length;
+			let sob = Math.floor(1+9*i/canvas.width)*Math.floor(1+9*j/canvas.height);
 			if(res > sob){
 				if(res - sob === 1){
 					ctx.fillStyle = "red";

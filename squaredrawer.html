@@ -3352,6 +3352,98 @@ function getSquares(width,height,recursive){
 			}
 		}
 	}
+	if(width > 4 && height > 4 && width < 8 && height < 5 && record.coords.length < Math.floor(width)*Math.floor(height) + 3){//19 squeeze
+		let w_gap = width - Math.floor(width);
+		let h_gap = height - Math.floor(height);
+		let diff = (3 + 4*s1/3) - height;
+		if(
+			diff >= 0
+			&& diff <= 1+(4*s1/3 - 1)/2-s2 - s2
+			&& 3 + 4*s1/3 + 2*diff <= 4 + w_gap
+		){
+			record.coords = [
+				[0,0,0],
+				[0,1,0],
+				[1,0,0],
+
+				[2 + 4*s1/3 + diff*2,0,0],
+
+				[2 + 4*s1/3 + diff*2,2 + 4*s1/3 - diff,0],
+				[2 + 4*s1/3 + diff*2,1 + 4*s1/3 - diff,0],
+				[2 + 4*s1/3 + diff*2,4*s1/3 - diff,0],
+
+				[1 + 4*s1/3 + diff*2,2 + 4*s1/3 - diff,0],
+				[1 + 4*s1/3 + diff*2,1 + 4*s1/3 - diff,0],
+
+				[4*s1/3 + diff*2,2 + 4*s1/3 - diff,0],
+
+				[0,2 + 4*s1/3 - diff,0],
+
+				[1+(4*s1/3 - 1)/2 + diff,2 + 4*s1/3 + (4*s1/3 - 1)/2 - diff,-135],
+				[1+(4*s1/3 - 1)/2-s2 + diff,2 + 4*s1/3 + (4*s1/3 - 1)/2-s2 - diff,-135],
+
+				[1+(4*s1/3 - 1)/2+(1/2-s1/3)+s2 + diff,2 + 4*s1/3 + (4*s1/3 - 1)/2+(1/2-s1/3)-s2 - diff,-135],
+				[1+(4*s1/3 - 1)/2-s2+(1/2-s1/3)+s2 + diff,2 + 4*s1/3 + (4*s1/3 - 1)/2-s2+(1/2-s1/3)-s2 - diff,-135],
+
+				[2 + 4*s1/3 + (4*s1/3 - 1)/2 + diff,1+(4*s1/3 - 1)/2 - diff,135],
+				[2 + 4*s1/3 + (4*s1/3 - 1)/2-s2 + diff,1+(4*s1/3 - 1)/2-s2 - diff,135],
+
+				[2 + 4*s1/3 + (4*s1/3 - 1)/2+(1/2-s1/3)-s2 + diff,1+(4*s1/3 - 1)/2+(1/2-s1/3)+s2 - diff,135],
+				[2 + 4*s1/3 + (4*s1/3 - 1)/2-s2+(1/2-s1/3)-s2 + diff,1+(4*s1/3 - 1)/2-s2+(1/2-s1/3)+s2 - diff,135],
+			]
+			for(let i=0;i<Math.floor(width - 4);i++){
+				record.coords.push([i + w_gap + 4,0,0]);
+				record.coords.push([i + w_gap + 4,1,0]);
+				record.coords.push([i + w_gap + 4,2,0]);
+				record.coords.push([i + w_gap + 4,3,0]);
+			}
+		}
+		else{
+			diff = (3 + 4*s1/3) - (4 + w_gap);
+			if(
+				diff >= 0
+				&& diff <= 1+(4*s1/3 - 1)/2-s2 - s2
+				&& 3 + 4*s1/3 + 2*diff <= 4 + h_gap
+			){
+				record.coords = [
+					[0,0,0],
+					[0,1,0],
+					[1,0,0],
+
+					[2 + 4*s1/3 - diff,0,0],
+
+					[2 + 4*s1/3 - diff,2 + 4*s1/3 + diff*2,0],
+					[2 + 4*s1/3 - diff,1 + 4*s1/3 + diff*2,0],
+					[2 + 4*s1/3 - diff,4*s1/3 + diff*2,0],
+
+					[1 + 4*s1/3 - diff,2 + 4*s1/3 + diff*2,0],
+					[1 + 4*s1/3 - diff,1 + 4*s1/3 + diff*2,0],
+
+					[4*s1/3 - diff,2 + 4*s1/3 + diff*2,0],
+
+					[0,2 + 4*s1/3 + diff*2,0],
+
+					[1+(4*s1/3 - 1)/2 - diff,2 + 4*s1/3 + (4*s1/3 - 1)/2 + diff,-135],
+					[1+(4*s1/3 - 1)/2-s2 - diff,2 + 4*s1/3 + (4*s1/3 - 1)/2-s2 + diff,-135],
+
+					[1+(4*s1/3 - 1)/2+(1/2-s1/3)+s2 - diff,2 + 4*s1/3 + (4*s1/3 - 1)/2+(1/2-s1/3)-s2 + diff,-135],
+					[1+(4*s1/3 - 1)/2-s2+(1/2-s1/3)+s2 - diff,2 + 4*s1/3 + (4*s1/3 - 1)/2-s2+(1/2-s1/3)-s2 + diff,-135],
+
+					[2 + 4*s1/3 + (4*s1/3 - 1)/2 - diff,1+(4*s1/3 - 1)/2 + diff,135],
+					[2 + 4*s1/3 + (4*s1/3 - 1)/2-s2 - diff,1+(4*s1/3 - 1)/2-s2 + diff,135],
+
+					[2 + 4*s1/3 + (4*s1/3 - 1)/2+(1/2-s1/3)-s2 - diff,1+(4*s1/3 - 1)/2+(1/2-s1/3)+s2 + diff,135],
+					[2 + 4*s1/3 + (4*s1/3 - 1)/2-s2+(1/2-s1/3)-s2 - diff,1+(4*s1/3 - 1)/2-s2+(1/2-s1/3)+s2 + diff,135],
+				]
+				for(let i=0;i<Math.floor(width - 4);i++){
+					record.coords.push([i + w_gap + 4,0,0]);
+					record.coords.push([i + w_gap + 4,1,0]);
+					record.coords.push([i + w_gap + 4,2,0]);
+					record.coords.push([i + w_gap + 4,3,0]);
+				}
+			}
+		}
+	}
 	squareList.forEach(arr => {
 		if(width >= arr.x && height >= arr.y){
 			if(record.coords.length < arr.n + Math.floor(width - arr.x)*Math.floor(arr.y) + Math.floor(height - arr.y)*Math.floor(width)){

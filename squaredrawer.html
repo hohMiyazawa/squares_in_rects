@@ -3097,7 +3097,6 @@ function getSquares(width,height,recursive){
 		let w_gap = width - secondary;
 		if(width - secondary + height - base_board - 1 >= s1){
 			let len = Math.floor(s1 * (base_board - 1) + s1 * h_gap/2 + s1 * w_gap/2);
-			//console.log("gob",len + base_board*base_board + base_board + 2 + (secondary - base_board - 1) * (base_board+1));
 			if(len + base_board*base_board + base_board + 2 + (secondary - base_board - 1) * (base_board+1) > record.coords.length){
 				record.coords = [[base_board + w_gap,0,0],[0,base_board + h_gap,0]];
 				for(let i=0;i<base_board;i++){
@@ -3142,8 +3141,6 @@ function getSquares(width,height,recursive){
 			let diffComp = Math.cos(diff_ang);
 			let real_diag = diag*diffComp;
 			let count = Math.floor(width)*Math.floor(height) - Math.floor(height) + 2 + Math.floor(real_diag);
-			//console.log("real",real_diag,diag);
-			//console.log("ang",ang*180/Math.PI,ang2*180/Math.PI);
 			if(count > record.coords.length){
 				let coords = [[0,0,0],[Math.floor(height) + w_gap - 1,height - 1,0]];
 				let stair = Math.floor(height) - 1;
@@ -3187,7 +3184,7 @@ function getSquares(width,height,recursive){
 								else{
 									coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
 									catch_flag = true;
-
+									cx += bon1*c*c;
 									cy -= bon1*c*s;
 								}
 							}
@@ -3217,10 +3214,8 @@ function getSquares(width,height,recursive){
 				else{
 					let cx = x1 + s + c;
 					let cy = y1 - s + c;
-					//console.log("a",x1,y1);
 					for(let i = 1;i<Math.floor(real_diag);i++){
 						let diff = 1 - ((cx - 1 - w_gap) % 1);
-						//console.log("diff c 2", diff,c,s);
 						if(diff < s){
 							let future = cy + diff*c/s;
 							let hylle = Math.floor(cx - 1 - w_gap) + 2;
@@ -3266,14 +3261,14 @@ function getSquares(width,height,recursive){
 		}
 	}
 	//göbel strip x4:
-	/*if(width > 6 && height > 6 && (width + height - Math.floor(width) - Math.floor(height)) >= 4*s1 - 4){
-		let h_gap = height - Math.floor(width);
+	if(width > 6 && height > 6 && (width + height - Math.floor(width) - Math.floor(height)) >= 4*s1 - 4){
+		let h_gap = height - Math.floor(height);
 		let w_gap = width - Math.floor(width);
 		let st = Math.floor(height - 3);
 		//let diag = s1*(st-1 + h_gap/2 + w_gap/2);
-		let diag = s1*(st-1 + h_gap/2 + w_gap/2 + 1);
+		let diag = s1*(st-1 + h_gap/2 + w_gap/2);
 		//let count = st*st + st + 12 + 4*Math.floor(diag) + Math.floor(height)*Math.floor(width - Math.floor(height));
-		let count = st*st + st + 6 + 4*Math.floor(diag) + Math.floor(height)*Math.floor(width - Math.floor(height));
+		let count = st*st + st + 12 + 4*Math.floor(diag) + Math.floor(height)*Math.floor(width - Math.floor(height));
 		//console.log(count,width,height,"diag",diag,"st",st);
 		if(count > record.coords.length){
 			record.coords = [
@@ -3302,16 +3297,21 @@ function getSquares(width,height,recursive){
 				}
 			}
 			for(let i = 0;i<Math.floor(diag);i++){
-				record.coords.push([1 - h_gap/2 + s2*i,3 + h_gap/2 + s2*i,-45]);
-				record.coords.push([1 - h_gap/2 + s2*i+s2,3 + h_gap/2 + s2*i-s2,-45]);
-				record.coords.push([1 - h_gap/2 + s2*i+s1,3 + h_gap/2 + s2*i-s1,-45]);
-				record.coords.push([1 - h_gap/2 + s2*i+s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
+				record.coords.push([st - i*s2 + w_gap/2,1 - w_gap/2 + i*s2,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2,1 - w_gap/2 + i*s2 + s2,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s1,1 - w_gap/2 + i*s2 + s1,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*3,1 - w_gap/2 + i*s2 + s2*3,45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i,3 + h_gap/2 + s2*i,-45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i-s2,3 + h_gap/2 + s2*i-s2,-45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i-s1,3 + h_gap/2 + s2*i-s1,-45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i-s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
 			}
+			record.info = "4-width Göbel strip";
 			if(record.coords.length !== count){
 				throw "up"
 			}
 		}
-	}*/
+	}
 	//göbel strip x2:
 	if(width > 3 && height > 3 && (width + height - Math.floor(width) - Math.floor(height)) >= 2*s1 - 1){
 		let h_gap = height - Math.floor(width);

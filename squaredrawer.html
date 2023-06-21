@@ -2238,6 +2238,102 @@ function graham(width,height){
 	return section1
 }
 
+function gen_slant2(width,height,goal){
+	if(width > 4 && height > 3){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let h_unit = Math.floor(height);
+		while(width < h_unit+1){
+			h_unit--;
+		}
+		if(h_gap*h_gap + (w_gap+1)*(w_gap+1) >= 4){
+			let ang = Math.atan(h_gap/(w_gap+1));
+			let diag = Math.hypot(h_unit + w_gap - 2,h_unit - 2 + h_gap);
+			let ang2 = Math.acos((h_unit - 2 + h_gap)/diag);
+			let diff_ang = ang2 - ang;
+			let diffComp = Math.cos(diff_ang);
+			let real_diag = diag*diffComp;
+			let count =
+				(h_unit - 1)*(h_unit - 1)
+				+ (h_unit - 1)
+				+ 3
+				+ Math.floor(real_diag)*2 + Math.floor(width) * Math.floor(height - h_unit)
+				+ h_unit * Math.floor(width - h_unit - 1,w_gap);
+			let slippery = real_diag - Math.floor(real_diag);
+			if(slippery/Math.sin(ang) >= 1){//extra square
+				count++
+			}
+			if(count > goal){
+				let coords = [
+					[0,0,0],
+					[1,0,0],
+
+					[h_unit + w_gap,h_unit + h_gap - 1,0],
+					//[1,0,0],
+				]
+				if(slippery/Math.sin(ang) >= 1){
+					coords.push([h_unit + w_gap - 1,h_unit + h_gap - 1,0])
+				}
+				for(let i=0;i<Math.floor(width - h_unit - 1 - w_gap);i++){
+					for(let j=0;j<h_unit;j++){
+						coords.push([h_unit + w_gap + 1 + i,j,0])
+					}
+				}
+				for(let i=0;i<Math.floor(width);i++){
+					for(let j=0;j<Math.floor(height - h_unit - h_gap);j++){
+						coords.push([i,h_unit + h_gap,0])
+					}
+				}
+				for(let i=0;i<h_unit - 1;i++){
+					for(let j=0;i+j<h_unit - 1;j++){
+						coords.push([j,h_unit + h_gap - i - 1,0]);
+						coords.push([h_unit + w_gap - j,i,0])
+					}
+				}
+				let c = Math.cos(ang);
+				let s = Math.sin(ang);
+				let alf = w_gap/(s/c + c/s);
+				let x1 = 2 + alf*c/s - 2*c;
+				let y1 = 1 - alf + s*2;
+				let cx = x1 + s;
+				let cy = y1 + c;
+				coords.push([x1,y1,-ang*180/Math.PI]);
+				coords.push([x1+c,y1-s,-ang*180/Math.PI]);
+				for(let i = 1;i<Math.floor(real_diag);i++){
+					let diff = 1 - ((cy - 1 - h_gap) % 1);
+					if(diff < c){
+						let future = cx + diff*s/c;
+						let hylle = Math.floor(cy - 1 - h_gap) + 2;
+						let bon1 = (hylle - future);
+						let diff2 = (c - diff)*(s/c + c/s);
+						if(diff2 < bon1){
+							coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+							coords.push([cx+diff2*c*c+c,cy-diff2*c*s-s,-ang*180/Math.PI]);
+							cx += bon1*c*c;
+							cy -= bon1*c*s;
+						}
+						else{
+							cx += bon1*c*c;
+							cy -= bon1*c*s;
+							coords.push([cx,cy,-ang*180/Math.PI]);
+							coords.push([cx+c,cy-s,-ang*180/Math.PI]);
+						}
+					}
+					else{
+						coords.push([cx,cy,-ang*180/Math.PI]);
+						coords.push([cx + c,cy - s,-ang*180/Math.PI]);
+					}
+					cx += s;
+					cy += c;
+				}
+				return coords;
+			}
+		}
+
+	}
+	return []
+}
+
 function getSquares(width,height,recursive){
 	if(width < 1 || height < 1){
 		return {
@@ -3026,10 +3122,22 @@ function getSquares(width,height,recursive){
 		let h_gap = height - Math.floor(height);
 		let w_gap = width - Math.floor(width);
 		if(h_gap*h_gap + w_gap*w_gap >= 1){
-			let alf = (w_gap * h_gap * h_gap)/(w_gap*w_gap + h_gap*h_gap);
+			let distance = Math.hypot(w_gap,h_gap);
 			let ang = Math.atan(h_gap/w_gap);
 			let diag = Math.hypot(Math.floor(height) + w_gap - 2,height - 2);
 			let ang2 = Math.acos((height - 2)/diag);
+			if(ang2 < ang){
+				ang -= Math.acos(1/distance);
+				if(ang < ang2){
+					ang = ang2
+				}
+			}
+			else{
+				ang += Math.acos(1/distance);
+				if(ang > ang2){
+					ang = ang2
+				}
+			}
 			let diff_ang = ang2 - ang;
 			let diffComp = Math.cos(diff_ang);
 			let real_diag = diag*diffComp;
@@ -3037,19 +3145,25 @@ function getSquares(width,height,recursive){
 			//console.log("real",real_diag,diag);
 			//console.log("ang",ang*180/Math.PI,ang2*180/Math.PI);
 			if(count > record.coords.length){
-				record.coords = [[0,0,0],[Math.floor(height) + w_gap - 1,height - 1,0]];
+				let coords = [[0,0,0],[Math.floor(height) + w_gap - 1,height - 1,0]];
 				let stair = Math.floor(height) - 1;
 				for(let i=0;i<stair;i++){
 					for(let j=0;j+i<stair;j++){
-						record.coords.push([j,height - 1 - i,0])
-						record.coords.push([Math.floor(height) + w_gap - 1 - j,i,0])
+						coords.push([j,height - 1 - i,0])
+						coords.push([Math.floor(height) + w_gap - 1 - j,i,0])
 					}
 				}
-				let x1 = 1 - alf;
-				let y1 = 1 + alf*h_gap/w_gap;
+				let alf = (w_gap * h_gap * h_gap)/(w_gap*w_gap + h_gap*h_gap);
 				let c = Math.cos(ang);
 				let s = Math.sin(ang);
-				record.coords.push([x1,y1,-ang*180/Math.PI]);
+				let flag = (c + s > 1 + w_gap) || (c + s > 1 + h_gap);
+				let catch_flag = false;
+				let fail_flag = false;
+				alf = h_gap/(c/s + s/c);
+				let x1 = 1 - alf;
+				let y1 = 1 + alf*h_gap/w_gap;
+				y1 = 1 + alf*s/c;
+				coords.push([x1,y1,-ang*180/Math.PI]);
 				if(w_gap > h_gap){
 					let cx = x1 + s;
 					let cy = y1 + c;
@@ -3061,18 +3175,37 @@ function getSquares(width,height,recursive){
 							let bon1 = (hylle - future);
 							let diff2 = (c - diff)*(s/c + c/s);
 							if(diff2 < bon1){
-								record.coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
-								cx += bon1*c*c;
-								cy -= bon1*c*s;
+								if(flag){
+									let hogh = Math.ceil(cy-diff2*c*s - s) - (cy-diff2*c*s -s);
+									cy += hogh;
+									let dist_x = 1 - (((cx+diff2*c*c) % 1) + s/c * (1 - ((cy-diff2*c*s - h_gap) % 1)));
+									cx += dist_x
+									coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+									cy -= bon1*c*s;
+									cx += bon1*c*c;		
+								}
+								else{
+									coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+									catch_flag = true;
+
+									cy -= bon1*c*s;
+								}
 							}
 							else{
 								cx += bon1*c*c;
 								cy -= bon1*c*s;
-								record.coords.push([cx,cy,-ang*180/Math.PI]);
+								let bava = Math.floor(cx + c - w_gap);
+								if(cy - s < bava){
+									fail_flag = true;
+									coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+								}
+								else{
+									coords.push([cx,cy,-ang*180/Math.PI]);
+								}
 							}
 						}
 						else{
-							record.coords.push([cx,cy,-ang*180/Math.PI]);
+							coords.push([cx,cy,-ang*180/Math.PI]);
 						}
 						cx += s;
 						cy += c;
@@ -3091,18 +3224,23 @@ function getSquares(width,height,recursive){
 							let bon1 = (hylle - future);
 							let diff2 = (s - diff)*(s/c + c/s);
 							if(diff2 < bon1){
-								record.coords.push([cx-diff2*c*s,cy+diff2*s*s,90-ang*180/Math.PI]);
+								coords.push([cx-diff2*c*s,cy+diff2*s*s,90-ang*180/Math.PI]);
+								catch_flag = true;
 								cy += bon1*s*s;
 								cx -= bon1*c*s;
 							}
 							else{
 								cy += (hylle - future)*s*s;
 								cx -= (hylle - future)*c*s;
-								record.coords.push([cx,cy,90-ang*180/Math.PI]);
+								/*let bava = Math.floor(cx + c - w_gap);
+								if(cy - s < bava){
+									fail_flag = true;
+								}*/
+								coords.push([cx,cy,90-ang*180/Math.PI]);
 							}
 						}
 						else{
-							record.coords.push([cx,cy,90-ang*180/Math.PI]);
+							coords.push([cx,cy,90-ang*180/Math.PI]);
 						}
 						cx += s;
 						cy += c;
@@ -3110,11 +3248,16 @@ function getSquares(width,height,recursive){
 				}
 				for(let i=0;i<Math.floor(width - Math.floor(height) - w_gap);i++){
 					for(let j=0;j<Math.floor(height);j++){
-						record.coords.push([i + w_gap + Math.floor(height),j,0]);
+						coords.push([i + w_gap + Math.floor(height),j,0]);
 					}
 				}
-				if(record.coords.length < count){
+				if(coords.length < count){
 					throw "uhoh..."
+				}
+				if(!(catch_flag && flag)){
+					if(!fail_flag){
+						record.coords = coords
+					}
 				}
 			}
 		}
@@ -3262,94 +3405,17 @@ function getSquares(width,height,recursive){
 		}
 	}
 	//slanted göbel strip x2
-	//TODO: swap order
-	if(width > 4 && height > 3){
-		let h_gap = height - Math.floor(height);
-		let w_gap = width - Math.floor(width);
-		let h_unit = Math.floor(height);
-		if(width < h_unit+1){
-			h_unit--;
-		}
-		if(h_gap*h_gap + (w_gap+1)*(w_gap+1) >= 4){
-			let ang = Math.atan(h_gap/(w_gap+1));
-			let diag = Math.hypot(h_unit + w_gap - 2,h_unit - 2 + h_gap);
-			let ang2 = Math.acos((h_unit - 2 + h_gap)/diag);
-			let diff_ang = ang2 - ang;
-			let diffComp = Math.cos(diff_ang);
-			let real_diag = diag*diffComp;
-			let count =
-				(h_unit - 1)*(h_unit - 1)
-				+ (h_unit - 1)
-				+ 3
-				+ Math.floor(real_diag)*2 + Math.floor(width) * Math.floor(height - h_unit)
-				+ h_unit * Math.floor(width - h_unit - 1,w_gap);
-			let slippery = real_diag - Math.floor(real_diag);
-			if(slippery/Math.sin(ang) >= 1){//extra square
-				count++
+	if(width > 3 && height > 3){
+		let count1 = gen_slant2(width,height,record.coords.length);
+		let count2 = gen_slant2(height,width,record.coords.length);
+		if(count1.length >= count2.length){
+			if(count1.length > record.coords.length){
+				record.coords = count1
 			}
-			if(count > record.coords.length){
-				record.coords = [
-					[0,0,0],
-					[1,0,0],
-
-					[h_unit + w_gap,h_unit + h_gap - 1,0],
-					//[1,0,0],
-				]
-				if(slippery/Math.sin(ang) >= 1){
-					record.coords.push([h_unit + w_gap - 1,h_unit + h_gap - 1,0])
-				}
-				for(let i=0;i<Math.floor(width - h_unit - 1 - w_gap);i++){
-					for(let j=0;j<h_unit;j++){
-						record.coords.push([h_unit + w_gap + 1 + i,j,0])
-					}
-				}
-				for(let i=0;i<Math.floor(width);i++){
-					for(let j=0;j<Math.floor(height - h_unit - h_gap);j++){
-						record.coords.push([i,h_unit + h_gap,0])
-					}
-				}
-				for(let i=0;i<h_unit - 1;i++){
-					for(let j=0;i+j<h_unit - 1;j++){
-						record.coords.push([j,h_unit + h_gap - i - 1,0]);
-						record.coords.push([h_unit + w_gap - j,i,0])
-					}
-				}
-				let c = Math.cos(ang);
-				let s = Math.sin(ang);
-				let alf = w_gap/(s/c + c/s);
-				let x1 = 2 + alf*c/s - 2*c;
-				let y1 = 1 - alf + s*2;
-				let cx = x1 + s;
-				let cy = y1 + c;
-				record.coords.push([x1,y1,-ang*180/Math.PI]);
-				record.coords.push([x1+c,y1-s,-ang*180/Math.PI]);
-				for(let i = 1;i<Math.floor(real_diag);i++){
-					let diff = 1 - ((cy - 1 - h_gap) % 1);
-					if(diff < c){
-						let future = cx + diff*s/c;
-						let hylle = Math.floor(cy - 1 - h_gap) + 2;
-						let bon1 = (hylle - future);
-						let diff2 = (c - diff)*(s/c + c/s);
-						if(diff2 < bon1){
-							record.coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
-							record.coords.push([cx+diff2*c*c+c,cy-diff2*c*s-s,-ang*180/Math.PI]);
-							cx += bon1*c*c;
-							cy -= bon1*c*s;
-						}
-						else{
-							cx += bon1*c*c;
-							cy -= bon1*c*s;
-							record.coords.push([cx,cy,-ang*180/Math.PI]);
-							record.coords.push([cx+c,cy-s,-ang*180/Math.PI]);
-						}
-					}
-					else{
-						record.coords.push([cx,cy,-ang*180/Math.PI]);
-						record.coords.push([cx + c,cy - s,-ang*180/Math.PI]);
-					}
-					cx += s;
-					cy += c;
-				}
+		}
+		else{
+			if(count2.length > record.coords.length){
+				record.coords = transpose(count2)
 			}
 		}
 	}

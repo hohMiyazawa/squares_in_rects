@@ -3196,8 +3196,11 @@ function getSquares(width,height,recursive){
 								cy -= bon1*c*s;
 								let bava = Math.floor(cx + c - w_gap);
 								if(cy - s < bava){
-									fail_flag = true;
-									coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+									let diff = (bava - cy + s);
+									cy += diff;
+									cx += diff*s/c;
+									//coords.push([cx+diff2*c*c,cy-diff2*c*s,-ang*180/Math.PI]);
+									coords.push([cx,cy,-ang*180/Math.PI]);
 								}
 								else{
 									coords.push([cx,cy,-ang*180/Math.PI]);

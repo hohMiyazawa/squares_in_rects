@@ -2803,6 +2803,73 @@ function getSquares(width,height,recursive){
 			record.coords = boost
 		}
 	}
+	/*if(width > 8 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 8*s1 - 10)){//goebel x3
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let st = Math.floor(height - 2);
+		let diag = s1*(st-1 + h_gap/2 + w_gap/2);
+		let count = st*st + 6 + 3*Math.floor(diag) + Math.floor(height)*Math.floor(width - Math.floor(height));
+		//console.log(count,width,height,"diag",diag,"st",st);
+		if(count > record.coords.length){
+			console.log(count);
+			record.coords = [
+				[0,height - 1,0],
+				[0,height - 2,0],
+				[0,height - 3,0],
+				[0,height - 4,0],
+				[0,height - 5,0],
+				[1,height - 1,0],
+				[1,height - 2,0],
+				[1,height - 3,0],
+				[1,height - 4,0],
+				[2,height - 1,0],
+				[2,height - 2,0],
+				[2,height - 3,0],
+				[3,height - 1,0],
+				[3,height - 2,0],
+				[4,height - 1,0],
+				[w_gap + Math.floor(height)-1,0,0],
+				[w_gap + Math.floor(height)-2,0,0],
+				[w_gap + Math.floor(height)-3,0,0],
+				[w_gap + Math.floor(height)-4,0,0],
+				[w_gap + Math.floor(height)-5,0,0],
+				[w_gap + Math.floor(height)-1,1,0],
+				[w_gap + Math.floor(height)-2,1,0],
+				[w_gap + Math.floor(height)-3,1,0],
+				[w_gap + Math.floor(height)-4,1,0],
+				[w_gap + Math.floor(height)-1,2,0],
+				[w_gap + Math.floor(height)-2,2,0],
+				[w_gap + Math.floor(height)-3,2,0],
+				[w_gap + Math.floor(height)-1,3,0],
+				[w_gap + Math.floor(height)-2,3,0],
+				[w_gap + Math.floor(height)-1,4,0],
+			];
+			for(let i=0;i<st;i++){
+				for(let j=0;j+i<st;j++){
+					record.coords.push([i,j,0])
+					record.coords.push([w_gap + Math.floor(height) - i - 1,height - j - 1,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width - Math.floor(height) - w_gap);i++){
+				for(let j=0;j<Math.floor(height);j++){
+					record.coords.push([st + 5 + w_gap + i,j,0])
+				}
+			}
+			for(let i = 0;i<Math.floor(diag);i++){
+				record.coords.push([st - i*s2 + w_gap/2,1 - w_gap/2 + i*s2,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2,1 - w_gap/2 + i*s2 + s2,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s1,1 - w_gap/2 + i*s2 + s1,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*3,1 - w_gap/2 + i*s2 + s2*3,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*4,1 - w_gap/2 + i*s2 + s2*4,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*5,1 - w_gap/2 + i*s2 + s2*5,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*6,1 - w_gap/2 + i*s2 + s2*6,45]);
+			}
+			record.info = "3-width Göbel strip";
+			if(record.coords.length !== count){
+				throw "up"
+			}
+		}
+	}*/
 	if(width > 9 && height > 8 && (width + height - Math.floor(width) - Math.floor(height) >= 6*s1 - 7)){//76
 		if(record.coords.length < Math.floor(width)*Math.floor(height) + 4){
 			let h_gap = height - Math.floor(height);
@@ -3379,6 +3446,53 @@ function getSquares(width,height,recursive){
 			//	record.coords.push([1 - h_gap/2 - s2*i-s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
 			}
 			record.info = "7-width Göbel strip";
+			if(record.coords.length !== count){
+				throw "up"
+			}
+		}
+	}
+	//göbel strip x8:
+	if(width > 12 && height > 12 && (width + height - Math.floor(width) - Math.floor(height)) >= 8*s1 - 10){
+		let h_gap = height - Math.floor(height);
+		let w_gap = width - Math.floor(width);
+		let st = Math.floor(height - 6);
+		let diag = s1*(st-1 + h_gap/2 + w_gap/2);
+		let count = st*st + st + 42 + 8*Math.floor(diag) + Math.floor(height)*Math.floor(width - Math.floor(height));
+		//console.log(count,width,height,"diag",diag,"st",st);
+		if(count > record.coords.length){
+			record.coords = [];
+			for(let i=0;i<6;i++){
+				for(let j=0;i+j<6;j++){
+					record.coords.push([j,height - i - 1,0]);
+					record.coords.push([w_gap + Math.floor(height)-1-i,j,0])
+				}
+			}
+			for(let i=0;i<st;i++){
+				for(let j=0;j+i<st;j++){
+					record.coords.push([i,j,0])
+					record.coords.push([w_gap + Math.floor(height) - i - 1,height - j - 1,0])
+				}
+			}
+			for(let i=0;i<Math.floor(width - Math.floor(height) - w_gap);i++){
+				for(let j=0;j<Math.floor(height);j++){
+					record.coords.push([st + 6 + w_gap + i,j,0])
+				}
+			}
+			for(let i = 0;i<Math.floor(diag);i++){
+				record.coords.push([st - i*s2 + w_gap/2,1 - w_gap/2 + i*s2,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2,1 - w_gap/2 + i*s2 + s2,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s1,1 - w_gap/2 + i*s2 + s1,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*3,1 - w_gap/2 + i*s2 + s2*3,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*4,1 - w_gap/2 + i*s2 + s2*4,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*5,1 - w_gap/2 + i*s2 + s2*5,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*6,1 - w_gap/2 + i*s2 + s2*6,45]);
+				record.coords.push([st - i*s2 + w_gap/2 + s2*7,1 - w_gap/2 + i*s2 + s2*7,45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i,3 + h_gap/2 + s2*i,-45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i-s2,3 + h_gap/2 + s2*i-s2,-45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i-s1,3 + h_gap/2 + s2*i-s1,-45]);
+			//	record.coords.push([1 - h_gap/2 - s2*i-s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
+			}
+			record.info = "8-width Göbel strip";
 			if(record.coords.length !== count){
 				throw "up"
 			}
@@ -3993,7 +4107,7 @@ function getSquares(width,height,recursive){
 			(height > 3 && width > 7 && width < 8)
 			|| (width > 3 && height > 7 && height < 8)
 		)
-		&& record.coords.length < Math.floor(width)*Math.floor(height) + 1
+		&& record.coords.length < Math.floor(width)*Math.floor(height) + 1	
 	){
 		let generate = function(width,height,flip){
 			let w_gap = width - Math.floor(width);
@@ -4007,6 +4121,10 @@ function getSquares(width,height,recursive){
 				1 + s2 - h_gap/2 + grab + s1 - hh/2 + s2 + s2/2 <= width/2
 				&& width/2 - s2/2 - delta_1 - delta_2 - 2 >= 1
 			){
+				let center_x = width/2 - mhei/2;
+				let diffi = (1 + s2 - h_gap/2 + grab + s1) - center_x - s2;
+				let nx = 1 + s2 - h_gap/2 + grab + s1 + s2 - diffi/2;
+				let ny = s2 + s2 + diffi/2;
 				let coords = [
 					[0,0,0],
 					[1-h_gap/2,1+h_gap/2,-45],
@@ -4015,8 +4133,8 @@ function getSquares(width,height,recursive){
 					[1 + s2 - h_gap/2 + grab + s2,s1,-45],
 					[1 + s2 - h_gap/2 + grab + s1,s2,-45],
 
-					[width/2 - s2/2,s1 + hh/2,-45],
-					[width/2 - s2/2 - s2,s1 + hh/2 + s2,-45],
+					[nx,ny,-45],
+					[width - nx,mhei - ny,135],
 
 					[width - (1 + s2 - h_gap/2 + grab + s2) - s1 - s2,s1 + hh + s1,-45],
 					[width - (1 + s2 - h_gap/2 + grab + s2) - s1,s1 + hh + s2,-45],

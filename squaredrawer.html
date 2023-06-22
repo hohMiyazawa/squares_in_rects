@@ -305,6 +305,7 @@ let squareList = [
 		[1-((3+s1*2)/2 - 2)+s1,2+((3+s1*2)/2 - 2)+s1,-45],[1-((3+s1*2)/2 - 2)+s2+s1,2+((3+s1*2)/2 - 2)-s2+s1,-45],[1-((3+s1*2)/2 - 2)+s2*2+s1,2+((3+s1*2)/2 - 2)-s2*2+s1,-45],[1-((3+s1*2)/2 - 2)+s2*3+s1,2+((3+s1*2)/2 - 2)-s2*3+s1,-45],
 		[1-((3+s1*2)/2 - 2)+s2*3,2+((3+s1*2)/2 - 2)+s2*3,-45],[1-((3+s1*2)/2 - 2)+s2+s2*3,2+((3+s1*2)/2 - 2)-s2+s2*3,-45],[1-((3+s1*2)/2 - 2)+s2*2+s2*3,2+((3+s1*2)/2 - 2)-s2*2+s2*3,-45],[1-((3+s1*2)/2 - 2)+s2*3+s2*3,2+((3+s1*2)/2 - 2)-s2*3+s2*3,-45],
 	]},
+	{x: 8.7711737,y: 4.915549939,n:36, coords: [[2.2548674816654244,4.465818061456583,-63.27351720557683],[2.7045993592088404,3.5726544491652668,-63.27351720557683],[3.1543312367522565,2.67949083687395,-63.27351720557683],[3.604063114295673,1.786327224582633,-63.27351720557683],[4.053794991839089,0.8931636122913162,-63.27351720557683],[0,3.915549939,0],[1,3.915549939,0],[0,2.915549939,0],[0,0,0],[0,1,0],[1,0,0],[2,0,0],[3,0,0],[1.5311886707174822,3.6794908368739505,-63.27351720557683],[1.9809205482608987,2.7863272245826334,-63.27351720557683],[2.4306524258043147,1.8931636122913167,-63.27351720557683],[0.8613048516086295,2.7863272245826334,-63.27351720557683],[1.3110367291520455,1.8931636122913167,-63.27351720557683],[6.516306218334577,0.4497318775434165,116.72648279442316],[6.06657434079116,1.3428954898347332,116.72648279442316],[5.616842463247744,2.23605910212605,116.72648279442316],[5.167110585704329,3.129222714417367,116.72648279442316],[4.717378708160911,4.022386326708684,116.72648279442316],[8.7711737,1,180],[7.7711737,1,180],[8.7711737,2,180],[8.7711737,4.915549939,180],[8.7711737,3.915549939,180],[7.7711737,4.915549939,180],[6.7711737,4.915549939,180],[5.7711737,4.915549939,180],[7.2399850292825185,1.2360591021260494,116.72648279442316],[6.790253151739103,2.1292227144173665,116.72648279442316],[6.340521274195686,3.0223863267086832,116.72648279442316],[7.909868848391371,2.1292227144173665,116.72648279442316],[7.460136970847955,3.0223863267086832,116.72648279442316]]},
 	{x: 6.59861960924436011617837046268, y: 6.59861960924436011617837046268, n:37, coords:[
 		[0,0,0],
 		[1,0,0],
@@ -1963,6 +1964,16 @@ function gen_slant6(width,height){
 			
 			};
 			hats.push(cornerblock);
+			hats.push({
+				size: 2 + c + addition,
+				squares: cornerblock.squares.map(a => a).concat([
+					[-c-2-addition,height-1,0],
+					[-c-2-addition,height-2,0],
+					[-c-2-addition,height-3,0],
+					[-c-2-addition,height-4,0],
+					[-c-2-addition,height-5,0]
+				])
+			});
 			rounds.forEach((round,ind) => {
 				let gully = {size: 1 + c + round + addition,squares: lava.map(a => a)};
 				top = (6-1)*s - c + (1 - (s/c))*s + 1 + round  + addition;
@@ -1980,7 +1991,17 @@ function gen_slant6(width,height){
 					}
 				
 				};
-				hats.push(gully)
+				hats.push(gully);
+				hats.push({
+					size: 2 + c + round + addition,
+					squares: gully.squares.map(a => a).concat([
+						[-c-2-addition-round,height-1,0],
+						[-c-2-addition-round,height-2,0],
+						[-c-2-addition-round,height-3,0],
+						[-c-2-addition-round,height-4,0],
+						[-c-2-addition-round,height-5,0]
+					])
+				})
 			})
 
 			lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],[-c+s*5,height-s-c*5,-ang],
@@ -2019,7 +2040,17 @@ function gen_slant6(width,height){
 					}
 				
 				};
-				hats.push(gully)
+				hats.push(gully);
+				hats.push({
+					size: 3 + c + round + addition,
+					squares: gully.squares.map(a => a).concat([
+						[-c-3-addition-round,height-1,0],
+						[-c-3-addition-round,height-2,0],
+						[-c-3-addition-round,height-3,0],
+						[-c-3-addition-round,height-4,0],
+						[-c-3-addition-round,height-5,0]
+					])
+				})
 			})
 
 			lava = [[-c,height-s,-ang],[-c+s,height-s-c,-ang],[-c+s*2,height-s-c*2,-ang],[-c+s*3,height-s-c*3,-ang],[-c+s*4,height-s-c*4,-ang],[-c+s*5,height-s-c*5,-ang],
@@ -2139,6 +2170,39 @@ function gen_slant6(width,height){
 				}
 				counter++;
 			}
+			/*best_i = 0;
+			best_j = 0;
+
+			for(let i=0;i<hats.length;i++){
+				for(let j=i;j<hats.length;j++){
+					let usable = width - hats[i].size - hats[j].size - middle - 1;
+					if(usable < 0){
+						continue
+					}
+					let county = hats[i].squares.length + hats[j].squares.length + 6*Math.floor(usable*c) + 5;
+					if(county > best){
+						best = county;
+						best_i = i;
+						best_j = j;
+					}
+				}
+			}
+			if(best > coords.length){
+				alert("test");
+				coords = hats[best_i].squares.map(
+					a => [a[0] + hats[best_i].size,a[1],a[2]]
+				).concat(
+					hats[best_j].squares.map(a => [width - a[0] - hats[best_j].size - 1, height - a[1], a[2] + 180]
+					)
+				);
+				let counter = 0;
+				while(coords.length < best){
+					for(let i=0;i<6;i++){
+						coords.push([hats[best_i].size + counter/c + i*s + s*s/c,height - s - i*c,-ang])
+					}
+					counter++;
+				}
+			}*/
 		}
 		return coords;
 	}
@@ -4471,7 +4535,7 @@ function teff(){
 	let canvas = document.getElementById("triangle");
 	canvas.width = 2000;
 	canvas.height =2000;
-	let dim = 24;
+	let dim = 9;
 	let ctx = canvas.getContext("2d");
 	ctx.fillStyle = "white";
 	ctx.fillRect(0,0,canvas.width,canvas.height);

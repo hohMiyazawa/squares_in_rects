@@ -4433,13 +4433,15 @@ function plotSquares(info,width,height){
 	efficiency.innerText = "n = " + info.coords.length + ", density: " + (100 * info.coords.length/(width*height)).toPrecision(4) + "%";
 	comment.innerText = info.comment;
 }
-let handled = false;
+let handledWidth  = 0;
+let handledHeight = 0;
 let rfunk = function(){
-	if(handled){
-		handled = false;
-		return
-	}
 	let rect = svgContainer.getClientRects();
+    if (rect[0].width === handledWidth && rect[0].height === handledHeight){
+        return
+    }
+    handledWidth  = rect[0].width;
+    handledHeight = rect[0].height;
 	let newWidth = ((rect[0].width - dimensions.margin*2)/dimensions.scale);
 	let newHeight = ((rect[0].height - dimensions.margin*2)/dimensions.scale);
 	//console.log(newWidth,widthInput.value);
@@ -4467,7 +4469,6 @@ function updateDimensions(){
 	if(width > 200){
 		return
 	}
-	handled = true;
 	plotSquares(getSquares(Math.max(width,height),Math.min(width,height)),width,height);
 }
 function apply(){

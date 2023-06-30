@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 </head>
 <body>
-Width:<input id="width" type="number" min="0" step="0.02" value="3.9" max="50">
-Height:<input id="height" type="number" min="0" step="0.02" value="3.9" max="50">
+<p>Based on the <a href="https://web.archive.org/web/20230530194618/https://erich-friedman.github.io/packing/squinsqu/">squares in squares</a> compillation of packings by Erich Friedman, and the <a href="https://kingbird.myphotos.cc/packing/squares_in_squares.html">squares in squares</a> packing reconstruction page by David Ellsworth</p>
+Width:<input id="width" type="number" min="0" step="0.005" value="3.9" max="50">
+Height:<input id="height" type="number" min="0" step="0.005" value="3.9" max="50">
 Square:<input id="square" type="checkbox">
 <button onclick="apply()">Apply</button>
 <p>Or drag the lower right corner around</p>
@@ -122,7 +123,9 @@ let squareList = [
 		[t*(2*s - 1.511948770624432 ) + c +0.5676453633988737 + s - c*0.118781,s + c + s*0.118781,-49.818062709670286],//done
 		//[1.92,1.5,-49.818],
 		[3.87708359002281417730789706010-s-c,2.401,-49.818062709670286],
-	]},
+	],
+		comment: "Found by Walter Trump in 1979"
+	},
 	{x: 12*(1+s1)/5, y:6*(1+s1)/5, n:12, coords:[
 		[0,6*(1+s1)/5-1,0],
 		[0,6*(1+s1)/5-2,0],
@@ -162,7 +165,8 @@ let squareList = [
 		[1.3720175307976368,2.6838412775762401,39.8049589774499973462400047793339],
 
 		[2.54550971432895279624386048106669,3.26948797698562051517148994054930,-36.6237863834465893201859433547440],
-	]},
+	],
+		comment: "Found by John Bidwell in 1998"},
 	{x: (7+Math.sqrt(7))/2, y:(7+Math.sqrt(7))/2, n:18, coords:[
 		[0,0,0],//done
 		[0,1,0],//done
@@ -2565,6 +2569,7 @@ function getSquares(width,height,recursive){
 
 				[vara3 + 2.54550971432895279624386048106669,3.26948797698562051517148994054930,-36.6237863834465893201859433547440],
 			]
+			record.comment = "John Bidwell's s(17) packing from 1998, stretched"
 		}
 	}
 	if(width > 4 && width < 5 && height > 2 + s2 && height < 3 && record.coords.length < 10 && width + height*2 >= 5 + 4*s1){
@@ -3149,6 +3154,7 @@ function getSquares(width,height,recursive){
 			}
 			if(boost.length > record.coords.length){
 				record.coords = boost
+				record.comment = "Göbel square"
 			}
 		}
 	})
@@ -3855,6 +3861,7 @@ function getSquares(width,height,recursive){
 					ang*180/Math.PI-90],
 
 				]
+				record.comment = "Walter Trump's packing from 1979, stretched"
 			}
 		}
 	}

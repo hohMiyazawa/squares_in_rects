@@ -9,10 +9,10 @@ Height:<input id="height" type="number" min="0" step="0.02" value="3.9" max="50"
 Square:<input id="square" type="checkbox">
 <button onclick="apply()">Apply</button>
 <p>Or drag the lower right corner around</p>
-<button onclick="rand()">Random</button>
-<div id="svgContainer" style="resize:both;overflow:auto;"></div>
+<button onclick="rand()" style="display: none">Random</button>
 <p id="efficiency"></p>
-<p id="comment" style="display:none"></p>
+<p id="comment"></p>
+<div id="svgContainer" style="resize:both;overflow:auto;"></div>
 <canvas id="triangle"></canvas>
 <script>
 let widthInput = document.getElementById("width");
@@ -2946,7 +2946,7 @@ function getSquares(width,height,recursive){
 				record.coords.push([st - i*s2 + w_gap/2 + s2*5,1 - w_gap/2 + i*s2 + s2*5,45]);
 				record.coords.push([st - i*s2 + w_gap/2 + s2*6,1 - w_gap/2 + i*s2 + s2*6,45]);
 			}
-			record.info = "3-width Göbel strip";
+			record.comment = "3-width Göbel strip";
 			if(record.coords.length !== count){
 				throw "up"
 			}
@@ -3456,7 +3456,7 @@ function getSquares(width,height,recursive){
 			//	record.coords.push([1 - h_gap/2 - s2*i-s1,3 + h_gap/2 + s2*i-s1,-45]);
 			//	record.coords.push([1 - h_gap/2 - s2*i-s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
 			}
-			record.info = "4-width Göbel strip";
+			record.comment = "4-width Göbel strip";
 			if(record.coords.length !== count){
 				throw "up"
 			}
@@ -3527,7 +3527,7 @@ function getSquares(width,height,recursive){
 			//	record.coords.push([1 - h_gap/2 - s2*i-s1,3 + h_gap/2 + s2*i-s1,-45]);
 			//	record.coords.push([1 - h_gap/2 - s2*i-s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
 			}
-			record.info = "7-width Göbel strip";
+			record.comment = "7-width Göbel strip";
 			if(record.coords.length !== count){
 				throw "up"
 			}
@@ -3574,7 +3574,7 @@ function getSquares(width,height,recursive){
 			//	record.coords.push([1 - h_gap/2 - s2*i-s1,3 + h_gap/2 + s2*i-s1,-45]);
 			//	record.coords.push([1 - h_gap/2 - s2*i-s2*3,3 + h_gap/2 + s2*i-s2*3,-45]);
 			}
-			record.info = "8-width Göbel strip";
+			record.comment = "8-width Göbel strip";
 			if(record.coords.length !== count){
 				throw "up"
 			}
@@ -3746,6 +3746,7 @@ function getSquares(width,height,recursive){
 		if(width >= arr.x && height >= arr.y){
 			if(record.coords.length < arr.n + Math.floor(width - arr.x)*Math.floor(arr.y) + Math.floor(height - arr.y)*Math.floor(width)){
 				record.coords = arr.coords.map(a => a);
+				record.comment = arr.comment;
 				for(let i=0;i<Math.floor(width - arr.x);i++){
 					for(let j=0;j<Math.floor(arr.y);j++){
 						record.coords.push([arr.x+i,j,0])
@@ -3760,6 +3761,7 @@ function getSquares(width,height,recursive){
 			let numa = Math.floor(width/arr.x);
 			if(record.coords.length < arr.n*numa + Math.floor(width - arr.x*numa)*Math.floor(arr.y) + Math.floor(height - arr.y)*Math.floor(width)){
 				record.coords = arr.coords.map(a => a);
+				record.comment = arr.comment;
 				for(let i=1;i<numa;i++){
 					record.coords = record.coords.concat(arr.coords.map(a => [a[0]+i*arr.x,a[1],a[2]]))
 				}
@@ -3778,6 +3780,7 @@ function getSquares(width,height,recursive){
 		if(arr.x !== arr.y && height !== width && height >= arr.x && width >= arr.y){
 			if(record.coords.length < arr.n + Math.floor(width - arr.y)*Math.floor(arr.x) + Math.floor(height - arr.x)*Math.floor(width)){
 				record.coords = transpose(arr.coords.map(a => a));
+				record.comment = arr.comment;
 				for(let i=0;i<Math.floor(width - arr.y);i++){
 					for(let j=0;j<Math.floor(arr.x);j++){
 						record.coords.push([arr.y+i,j,0])
